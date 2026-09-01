@@ -38,8 +38,8 @@ import Lecture15 from './lectures/Lecture15.jsx';
 import './styles/index.scss';
 
 const lectures = [
-  { id: '1',  title: 'Вступ у DevOps. Unix/Linux',                 icon: Terminal,  pdf: '/lectures/pdf/devops_lec1.pdf' },
-  { id: '2',  title: 'Автоматизація рутинних задач',               icon: Code,      pdf: '/lectures/pdf/devops_lec2.pdf' },
+  { id: '1', title: 'Вступ у DevOps. Unix/Linux', icon: Terminal, pdf: `${import.meta.env.BASE_URL}lectures/pdf/devops_lec1.pdf` },
+{ id: '2', title: 'Автоматизація рутинних задач', icon: Code, pdf: `${import.meta.env.BASE_URL}lectures/pdf/devops_lec2.pdf` },
   { id: '3',  title: 'Мережа очима DevOps',                        icon: Network,   component: Lecture3 },
   { id: '4',  title: 'Безперервна інтеграція',                     icon: GitBranch, component: Lecture4 },
   { id: '5',  title: 'Контейнери й образи',                        icon: Package,   component: Lecture5 },
