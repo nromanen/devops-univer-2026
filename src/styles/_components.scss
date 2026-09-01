@@ -1,0 +1,1045 @@
+// ============================================
+// QA COURSE - COMPONENTS
+// ============================================
+
+@use './variables' as *;
+
+// ===== SLIDE HEADER =====
+
+.slide-header {
+  text-align: center;
+  margin-bottom: $spacing-2xl;
+  animation: fadeIn 0.5s ease-out both;
+  
+  &__wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-base;
+  }
+  
+  &__icon {
+    width: $icon-lg;
+    height: $icon-lg;
+    color: var(--accent-blue-text);
+  }
+  
+  &__content {
+    text-align: left;
+  }
+  
+  &__title {
+    font-family: $font-heading;
+    font-size: $fs-slide-title;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  &__subtitle {
+    font-size: $fs-caption;
+    font-style: italic;
+    color: var(--text-disabled);
+    margin: 0;
+  }
+}
+
+// ===== INFO CARD =====
+
+.info-card {
+  background: var(--bg-card);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  // Border variants
+  &--blue { border-left: 4px solid $accent-blue; }
+  &--purple { border-left: 4px solid $accent-purple; }
+  &--green { border-left: 4px solid $accent-green; }
+  &--orange { border-left: 4px solid $accent-orange; }
+  &--red { border-left: 4px solid $accent-red; }
+  &--cyan { border-left: 4px solid $accent-cyan; }
+  &--pink { border-left: 4px solid $accent-pink; }
+  &--yellow { border-left: 4px solid $accent-yellow; }
+  
+  // Top border variants
+  &--top-blue { border-top: 4px solid $accent-blue; }
+  &--top-purple { border-top: 4px solid $accent-purple; }
+  &--top-green { border-top: 4px solid $accent-green; }
+  &--top-orange { border-top: 4px solid $accent-orange; }
+  &--top-red { border-top: 4px solid $accent-red; }
+  &--top-cyan { border-top: 4px solid $accent-cyan; }
+  &--top-pink { border-top: 4px solid $accent-pink; }
+  &--top-yellow { border-top: 4px solid $accent-yellow; }
+  
+  &__icon-wrapper {
+    width: $icon-xl;
+    height: $icon-xl;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $spacing-base;
+    
+    &--blue { background: rgba($accent-blue, 0.15); }
+    &--purple { background: rgba($accent-purple, 0.15); }
+    &--green { background: rgba($accent-green, 0.15); }
+    &--orange { background: rgba($accent-orange, 0.15); }
+    &--red { background: rgba($accent-red, 0.15); }
+    &--yellow { background: rgba($accent-yellow, 0.15); }
+    &--cyan { background: rgba($accent-cyan, 0.15); }
+    &--pink { background: rgba($accent-pink, 0.15); }
+
+  }
+  
+  &__icon {
+    width: $icon-lg;
+    height: $icon-lg;
+    
+    &--blue { color: $accent-blue; }
+    &--purple { color: $accent-purple; }
+    &--green { color: $accent-green; }
+    &--orange { color: $accent-orange; }
+    &--red { color: $accent-red; }
+    &--yellow { color: $accent-yellow; }
+    &--cyan { color: $accent-cyan; }
+    &--pink { color: $accent-pink; }
+  }
+  
+  &__title {
+    font-family: $font-heading;
+    font-size: $fs-card-title;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    margin-bottom: $spacing-xs;
+  }
+  
+  &__subtitle {
+    font-size: $fs-caption;
+    font-style: italic;
+    color: var(--text-disabled);
+    margin-bottom: $spacing-sm;
+  }
+  
+  &__text {
+    font-size: $fs-body;
+    color: var(--text-secondary);
+    line-height: $lh-normal;
+    margin: 0;
+  }
+}
+.info-card {
+  &__text {
+    &--muted { color: var(--text-muted); }
+    &--disabled { color: var(--text-disabled); }
+  }
+}
+
+// ===== TOOLTIP =====
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip-trigger {
+  cursor: pointer;
+  font-size: $fs-body;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  user-select: none;
+
+  .tooltip-wrapper:hover & {
+    opacity: 1;
+  }
+
+  &--blue { color: $accent-blue; }
+  &--purple { color: $accent-purple; }
+  &--green { color: $accent-green; }
+  &--orange { color: $accent-orange; }
+  &--red { color: $accent-red; }
+  &--cyan { color: $accent-cyan; }
+  &--pink { color: $accent-pink; }
+  &--yellow { color: $accent-yellow; }
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  max-width: 360px;
+  padding: $spacing-base;
+  border-radius: $radius-md;
+  background: var(--bg-card-dark);
+  box-shadow: var(--shadow-md);
+  font-size: $fs-body-sm;
+  color: var(--text-secondary);
+  line-height: $lh-normal;
+  z-index: 100;
+  animation: fadeIn 0.15s ease-out;
+
+  // Small arrow pointing down
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    border: 6px solid transparent;
+    border-top-color: var(--bg-card-dark);
+  }
+
+  &--blue { border-top: 2px solid $accent-blue; }
+  &--purple { border-top: 2px solid $accent-purple; }
+  &--green { border-top: 2px solid $accent-green; }
+  &--orange { border-top: 2px solid $accent-orange; }
+  &--red { border-top: 2px solid $accent-red; }
+  &--cyan { border-top: 2px solid $accent-cyan; }
+  &--pink { border-top: 2px solid $accent-pink; }
+  &--yellow { border-top: 2px solid $accent-yellow; }
+
+  strong {
+    color: var(--text-primary);
+    font-weight: $fw-semibold;
+  }
+}
+
+// ===== OUTLINED CARD =====
+
+.outlined-card {
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  
+  &--blue {
+    background: rgba($accent-blue, 0.1);
+    border: 1px solid rgba($accent-blue, 0.3);
+  }
+  &--purple {
+    background: rgba($accent-purple, 0.1);
+    border: 1px solid rgba($accent-purple, 0.3);
+  }
+  &--green {
+    background: rgba($accent-green, 0.1);
+    border: 1px solid rgba($accent-green, 0.3);
+  }
+  &--orange {
+    background: rgba($accent-orange, 0.1);
+    border: 1px solid rgba($accent-orange, 0.3);
+  }
+  &--red {
+    background: rgba($accent-red, 0.1);
+    border: 1px solid rgba($accent-red, 0.3);
+  }
+  &--yellow {
+    background: rgba($accent-yellow, 0.1);
+    border: 1px solid rgba($accent-yellow, 0.3);
+  }
+  &--cyan {
+    background: rgba($accent-cyan, 0.1);
+    border: 1px solid rgba($accent-cyan, 0.3);
+  }
+  &--pink {
+    background: rgba($accent-pink, 0.1);
+    border: 1px solid rgba($accent-pink, 0.3);
+  }
+  
+  &--gradient-blue-purple {
+    background: linear-gradient(135deg, rgba($accent-blue, 0.2), rgba($accent-purple, 0.2));
+    border: 1px solid rgba($accent-blue, 0.3);
+  }
+  &--gradient-green-blue {
+    background: linear-gradient(135deg, rgba($accent-green, 0.2), rgba($accent-blue, 0.2));
+    border: 1px solid rgba($accent-green, 0.3);
+  }
+  &--gradient-purple-pink {
+    background: linear-gradient(135deg, rgba($accent-purple, 0.2), rgba($accent-pink, 0.2));
+    border: 1px solid rgba($accent-purple, 0.3);
+  }
+}
+
+// ===== NUMBERED LIST =====
+
+.numbered-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-base;
+  
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-base;
+    padding: $spacing-lg;
+    background: var(--bg-card);
+    border-radius: $radius-lg;
+    border-left: 4px solid $accent-blue;
+  }
+  
+  &__number {
+    width: $number-size;
+    height: $number-size;
+    border-radius: $radius-full;
+    background: $gradient-primary;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $font-heading;
+    font-weight: $fw-bold;
+    font-size: $fs-caption;
+    flex-shrink: 0;
+  }
+  
+  &__text {
+    font-size: $fs-body-lg;
+    color: var(--text-primary);
+    line-height: $lh-relaxed;
+    margin: 0;
+  }
+}
+
+// ===== BADGE =====
+
+.badge {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $fs-badge;
+  font-weight: $fw-semibold;
+  
+  &--blue {
+    background: rgba($accent-blue, 0.2);
+    color: var(--accent-blue-badge);
+  }
+  &--purple {
+    background: rgba($accent-purple, 0.2);
+    color: var(--accent-purple-badge);
+  }
+  &--green {
+    background: rgba($accent-green, 0.2);
+    color: var(--accent-green-badge);
+  }
+  &--orange {
+    background: rgba($accent-orange, 0.2);
+    color: var(--accent-orange-badge);
+  }
+  &--red {
+    background: rgba($accent-red, 0.2);
+    color: var(--accent-red-badge);
+  }
+  &--yellow {
+    background: rgba($accent-yellow, 0.2);
+    color: var(--accent-yellow-text);
+  }
+  &--cyan {
+    background: rgba($accent-cyan, 0.2);
+    color: var(--accent-cyan-badge);
+  }
+  &--pink {
+    background: rgba($accent-pink, 0.2);
+    color: var(--accent-pink-badge);
+  }
+  
+  // Solid
+  &--solid-blue { background: $accent-blue; color: white; }
+  &--solid-purple { background: $accent-purple; color: white; }
+  &--solid-green { background: $accent-green; color: white; }
+  &--solid-orange { background: $accent-orange; color: white; }
+  &--solid-pink { background: $accent-pink; color: white; }
+  &--solid-cyan { background: $accent-cyan; color: white; }
+  &--solid-yellow { background: $accent-yellow; color: #1e293b; }
+  &--solid-red { background: $accent-red; color: white; }
+}
+
+// ===== TAG =====
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $fs-body-sm;
+  background: var(--bg-card-dark);
+  color: var(--text-primary);
+  
+  &--blue {
+    background: rgba($accent-blue, 0.2);
+    border: 1px solid rgba($accent-blue, 0.3);
+  }
+  &--green {
+    background: rgba($accent-green, 0.2);
+    border: 1px solid rgba($accent-green, 0.3);
+  }
+  &--red {
+    background: rgba($accent-red, 0.2);
+    border: 1px solid rgba($accent-red, 0.3);
+  }
+  &--purple {
+    background: rgba($accent-purple, 0.2);
+    border: 1px solid rgba($accent-purple, 0.3);
+  }
+  &--orange {
+    background: rgba($accent-orange, 0.2);
+    border: 1px solid rgba($accent-orange, 0.3);
+  }
+  &--yellow {
+    background: rgba($accent-yellow, 0.2);
+    border: 1px solid rgba($accent-yellow, 0.3);
+  }
+}
+
+// ===== HIGHLIGHT BOX =====
+
+.highlight-box {
+  padding: $spacing-base;
+  border-radius: $radius-lg;
+  text-align: center;
+  
+  &--blue {
+    background: rgba($accent-blue, 0.1);
+    border: 1px solid rgba($accent-blue, 0.3);
+    .highlight-box__text { color: var(--accent-blue-badge); }
+    .highlight-box__icon { color: $accent-blue; }
+  }
+  &--green {
+    background: rgba($accent-green, 0.1);
+    border: 1px solid rgba($accent-green, 0.3);
+    .highlight-box__text { color: var(--accent-green-badge); }
+    .highlight-box__icon { color: $accent-green; }
+  }
+  &--purple {
+    background: rgba($accent-purple, 0.1);
+    border: 1px solid rgba($accent-purple, 0.3);
+    .highlight-box__text { color: var(--accent-purple-badge); }
+    .highlight-box__icon { color: $accent-purple; }
+  }
+  &--yellow {
+    background: rgba($accent-yellow, 0.1);
+    border: 1px solid rgba($accent-yellow, 0.3);
+    .highlight-box__text { color: var(--accent-yellow-text); }
+    .highlight-box__icon { color: $accent-yellow; }
+  }
+  &--red {
+    background: rgba($accent-red, 0.1);
+    border: 1px solid rgba($accent-red, 0.3);
+    .highlight-box__text { color: var(--accent-red-badge); }
+    .highlight-box__icon { color: $accent-red; }
+  }
+  
+  &__icon {
+    width: $icon-md;
+    height: $icon-md;
+    margin: 0 auto $spacing-sm;
+  }
+  
+  &__text {
+    margin: 0;
+    font-size: $fs-body-lg;
+  }
+}
+
+// ===== CODE BLOCK =====
+
+// .code-block {
+//   font-family: $font-mono;
+//   font-size: $fs-body-sm;
+//   background: var(--bg-card-dark);
+//   padding: $spacing-md;
+//   border-radius: $radius-md;
+//   overflow-x: auto;
+  
+//   &__comment { color: var(--text-muted); }
+//   &__string { color: var(--code-string); }
+//   &__keyword { color: var(--accent-purple-text); }
+// }
+
+
+// ===== FLOW DIAGRAM =====
+
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-base;
+  flex-wrap: wrap;
+  padding: $spacing-base;
+  background: var(--bg-card-darker);
+  border-radius: $radius-md;
+}
+
+// ===== ICON BOX =====
+
+.icon-box {
+  text-align: center;
+  padding: $spacing-sm $spacing-base;
+  border-radius: $radius-md;
+  
+  &--green { background: rgba($accent-green, 0.2); }
+  &--purple { background: rgba($accent-purple, 0.2); }
+  &--red { background: rgba($accent-red, 0.2); }
+  &--blue { background: rgba($accent-blue, 0.2); }
+  &--orange { background: rgba($accent-orange, 0.2); }
+  
+  &__icon {
+    width: $icon-md;
+    height: $icon-md;
+    margin: 0 auto $spacing-xs;
+    
+    &--green { color: $accent-green; }
+    &--purple { color: $accent-purple; }
+    &--red { color: $accent-red; }
+    &--blue { color: $accent-blue; }
+  }
+  
+  &__title {
+    color: var(--text-primary);
+    font-size: $fs-body-sm;
+    font-weight: $fw-semibold;
+    margin: 0;
+  }
+  
+  &__subtitle {
+    color: var(--text-disabled);
+    font-size: $fs-tiny;
+    margin: 0;
+  }
+}
+
+// ===== ARROW =====
+
+.arrow {
+  width: $icon-md;
+  height: $icon-md;
+  color: var(--text-disabled);
+  
+  &--green { color: $accent-green; }
+  &--purple { color: $accent-purple; }
+  &--red { color: $accent-red; }
+  &--blue { color: $accent-blue; }
+}
+
+// ===== DEFINITION =====
+
+.definition {
+  background: var(--bg-card-dark);
+  padding: $spacing-base;
+  border-radius: $radius-md;
+  
+  &--green { border-left: 3px solid $accent-green; }
+  &--blue { border-left: 3px solid $accent-blue; }
+  &--purple { border-left: 3px solid $accent-purple; }
+  &--orange { border-left: 3px solid $accent-orange; }
+  &--cyan { border-left: 3px solid $accent-cyan; }
+  &--pink { border-left: 3px solid $accent-pink; }
+  &--red { border-left: 3px solid $accent-red; }
+  
+  &__term {
+    font-family: $font-heading;
+    font-size: $fs-card-title;
+    font-weight: $fw-bold;
+    margin: 0 0 $spacing-sm 0;
+    
+    &--green { color: var(--accent-green-text); }
+    &--blue { color: var(--accent-blue-text); }
+    &--purple { color: var(--accent-purple-text); }
+    &--orange { color: var(--accent-orange-text); }
+    &--cyan { color: var(--accent-cyan-text); }
+    &--pink { color: var(--accent-pink-text); }
+    &--red { color: var(--accent-red-text); }
+  }
+  
+  &__description {
+    font-size: $fs-body;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  
+  &__note {
+    font-size: $fs-caption;
+    font-style: italic;
+    color: var(--text-disabled);
+    margin-top: $spacing-xs;
+  }
+}
+
+// ===== CHECKLIST =====
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  
+  &__item {
+    color: var(--text-secondary);
+    font-size: $fs-body-sm;
+    margin: 0;
+    
+    &::before {
+      content: '✅ ';
+    }
+  }
+}
+
+// ===== KANBAN COLUMN =====
+
+.kanban-column {
+  flex: 1;
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  text-align: center;
+  
+  &--todo {
+    background: rgba($text-muted, 0.15);
+    border: 1px solid rgba($text-muted, 0.3);
+    .kanban-column__title { color: var(--text-muted); }
+  }
+  &--progress {
+    background: rgba($accent-yellow, 0.15);
+    border: 1px solid rgba($accent-yellow, 0.3);
+    .kanban-column__title { color: var(--accent-yellow-text); }
+  }
+  &--testing {
+    background: rgba($accent-purple, 0.15);
+    border: 1px solid rgba($accent-purple, 0.3);
+    .kanban-column__title { color: var(--accent-purple-text); }
+  }
+  &--done {
+    background: rgba($accent-green, 0.15);
+    border: 1px solid rgba($accent-green, 0.3);
+    .kanban-column__title { color: var(--accent-green-text); }
+  }
+  
+  &__title {
+    font-size: $fs-body-sm;
+    font-weight: $fw-semibold;
+    margin: 0;
+  }
+}
+
+// ===== DECISION TABLE =====
+
+.dt-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  font-size: $fs-body-sm;
+
+  // Header
+  &__header-label {
+    background: var(--bg-card-dark);
+    color: var(--text-primary);
+    padding: $spacing-sm $spacing-base;
+    text-align: left;
+    font-family: $font-heading;
+    font-weight: $fw-bold;
+    min-width: 180px;
+  }
+
+  &__header-rule {
+    padding: $spacing-sm;
+    text-align: center;
+    font-family: $font-heading;
+    font-weight: $fw-semibold;
+
+    &--blue   { background: rgba($accent-blue, 0.15);   color: var(--accent-blue-badge); }
+    &--purple { background: rgba($accent-purple, 0.15); color: var(--accent-purple-badge); }
+    &--green  { background: rgba($accent-green, 0.15);  color: var(--accent-green-badge); }
+    &--red    { background: rgba($accent-red, 0.15);    color: var(--accent-red-badge); }
+  }
+
+  // Rows
+  &__row--even { background: var(--bg-card); }
+  &__row--odd  { background: var(--bg-card-dark); }
+
+  // Separator
+  &__separator {
+    background: var(--text-disabled);
+    height: 2px;
+    padding: 0;
+  }
+
+  // Labels
+  &__label {
+    padding: $spacing-sm $spacing-base;
+    font-weight: $fw-semibold;
+
+    &--condition { color: var(--text-secondary); }
+    &--action    { color: var(--accent-yellow-text); }
+  }
+
+.dt-table {
+
+  // --- Yellow header variant (for collapsed "merged" columns) ---
+  &__header-rule {
+    &--yellow {
+      background: rgba($accent-yellow, 0.15);
+      color: var(--accent-yellow-text);
+    }
+
+    // Highlight modifier — marks columns that will be collapsed
+    &--highlight {
+      background: rgba($accent-yellow, 0.08);
+      color: var(--accent-yellow-text);
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $accent-yellow;
+      }
+    }
+  }
+
+  // --- "Don't care" cell style ---
+  &__cell--dontcare {
+    text-align: center;
+    padding: $spacing-sm;
+    color: var(--text-disabled);
+    font-size: $fs-body-lg;
+    font-weight: $fw-regular;
+  }
+}
+
+  // Cell values
+  &__cell {
+    text-align: center;
+    padding: $spacing-sm;
+
+    &--true  { color: $accent-green; }
+    &--false { color: $accent-red; }
+  }
+}
+
+// ============================================
+// STD DIAGRAM — State Transition Diagram styles
+// ============================================
+// Add to your styles or @use separately.
+// Uses existing variables and theme tokens.
+
+
+// ── Container ──
+// font-size in rem → SVG text uses em → scales with --base-font-size
+.std-diagram {
+  background: var(--bg-card-darker);
+  border-radius: $radius-lg;
+  padding: $spacing-xl $spacing-lg;
+  font-size: $fs-body-sm; // ← this controls SVG text scaling
+
+  &__svg {
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+// ── Nodes (rect) ──
+// Each color: fill = translucent accent, stroke = accent
+@each $name, $color in (
+  'green':  $accent-green,
+  'blue':   $accent-blue,
+  'purple': $accent-purple,
+  'red':    $accent-red,
+  'orange': $accent-orange,
+  'cyan':   $accent-cyan,
+) {
+  .std-diagram__node--#{$name} {
+    fill: rgba($color, 0.18);
+    stroke: $color;
+    stroke-width: 2.5;
+  }
+
+  .std-diagram__node-title--#{$name} {
+    fill: var(--accent-#{$name}-text);
+    font-size: 1.05em;
+    font-weight: $fw-bold;
+    font-family: $font-heading;
+  }
+
+  .std-diagram__node-sub--#{$name} {
+    fill: var(--accent-#{$name}-text);
+    font-size: 0.8em;
+    font-style: italic;
+    font-family: $font-primary;
+    opacity: 0.65;
+  }
+
+  // Arrow lines
+  .std-diagram__line--#{$name} {
+    stroke: $color;
+    stroke-width: 2;
+  }
+
+  // Arrow labels
+  .std-diagram__label--#{$name} {
+    fill: var(--accent-#{$name}-text);
+    font-size: 0.75em;
+    font-weight: $fw-semibold;
+    font-family: $font-mono;
+  }
+
+  // Marker (arrowhead) fill
+  .std-diagram__marker--#{$name} {
+    fill: $color;
+  }
+}
+
+// ── Dashed lines (зворотні переходи) ──
+.std-diagram__line--dashed {
+  stroke-dasharray: 6 4;
+}
+
+// ── Legend ──
+.std-diagram__line--legend {
+  stroke: var(--text-disabled);
+  stroke-width: 2;
+}
+
+.std-diagram__legend-text {
+  fill: var(--text-disabled);
+  font-size: 0.75em;
+  font-weight: $fw-medium;
+  font-family: $font-primary;
+}
+
+
+// ===== OUTLINED CARD — highlight modifier =====
+.outlined-card {
+  &--highlight {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    border-left-width: 4px;
+    border-left-style: solid;
+
+    // define border-left for each color
+    &.outlined-card--blue   { border-left-color: var(--accent-blue); }
+    &.outlined-card--purple { border-left-color: var(--accent-purple); }
+    &.outlined-card--green  { border-left-color: var(--accent-green); }
+    &.outlined-card--orange { border-left-color: var(--accent-orange); }
+    &.outlined-card--red    { border-left-color: var(--accent-red); }
+    &.outlined-card--yellow { border-left-color: var(--accent-yellow); }
+    &.outlined-card--cyan   { border-left-color: var(--accent-cyan); }
+  }
+
+  &__icon {
+    width: $icon-sm;
+    height: $icon-sm;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+}
+
+// text-{color} helpers — for icon in HighlightBox
+.text-blue   { color: var(--accent-blue-text); }
+.text-purple { color: var(--accent-purple-text); }
+.text-green  { color: var(--accent-green-text); }
+.text-orange { color: var(--accent-orange-text); }
+.text-red    { color: var(--accent-red-text); }
+.text-yellow { color: var(--accent-yellow-text); }
+.text-cyan   { color: var(--accent-cyan-text); }
+
+// ===== CODE BLOCK =====
+.code-block {
+  background: var(--bg-card-dark);
+  border: var(--border-light);
+  border-top: 2px solid var(--accent-purple);
+  border-radius: $radius-lg;
+  overflow: visible;
+  font-size: $fs-body-sm;
+
+  &__header {
+    background: var(--bg-card);
+    border-bottom: var(--border-subtle);
+    padding: $spacing-sm $spacing-base;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    font-family: $font-mono;
+    font-size: $fs-caption;
+    color: var(--accent-purple-text);
+  }
+
+  &__copy {
+    background: transparent;
+    border: var(--border-subtle);
+    border-radius: $radius-xs;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: $fs-tiny;
+    padding: 0.2rem 0.5rem;
+    transition: color $transition-fast, border-color $transition-fast;
+
+    &:hover {
+      color: var(--accent-purple-text);
+      border-color: var(--accent-purple);
+    }
+
+    &--copied {
+      color: var(--accent-green-text);
+      border-color: var(--accent-green);
+    }
+  }
+
+  &__pre {
+    margin: 0;
+    padding: $spacing-base;
+    overflow-x: auto;
+    font-family: $font-mono;
+    color: var(--text-primary);
+    line-height: $lh-relaxed;
+    white-space: pre;
+  }
+
+  &__code {
+    font-family: inherit;
+  }
+}
+
+.code-block {
+  &--purple { border-top: 2px solid var(--accent-purple); }
+  &--blue   { border-top: 2px solid var(--accent-blue); }
+  &--green  { border-top: 2px solid var(--accent-green); }
+  &--orange { border-top: 2px solid var(--accent-orange); }
+  &--red    { border-top: 2px solid var(--accent-red); }
+  &--cyan   { border-top: 2px solid var(--accent-cyan); }
+}
+
+// ===== DEF BADGE =====
+.def-badge {
+  background: var(--bg-card);
+  border: var(--border-subtle);
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-md;
+
+  &__term {
+    font-family: $font-mono;
+    font-size: $fs-caption;
+    font-weight: $fw-semibold;
+    flex-shrink: 0;
+    min-width: 9rem;
+  }
+
+  &__desc {
+    color: var(--text-secondary);
+    font-size: $fs-body-sm;
+  }
+
+  &--blue   .def-badge__term { color: var(--accent-blue-text); }
+  &--purple .def-badge__term { color: var(--accent-purple-text); }
+  &--green  .def-badge__term { color: var(--accent-green-text); }
+  &--orange .def-badge__term { color: var(--accent-orange-text); }
+  &--cyan   .def-badge__term { color: var(--accent-cyan-text); }
+  &--yellow .def-badge__term { color: var(--accent-yellow-text); }
+
+  &--nowrap .badge {
+    white-space: nowrap;
+  }
+  
+}
+
+.slide-source {
+  font-size: $fs-caption;
+  color: var(--text-disabled);
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+
+  a {
+    color: var(--accent-blue-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: $fw-semibold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+// ===== EXT LINK =====
+.ext-link {
+  color: var(--accent-blue-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: $fw-semibold;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: opacity $transition-fast;
+
+  &:hover { opacity: 0.8; }
+
+  &--orange { color: var(--accent-orange-text); }
+  &--purple { color: var(--accent-purple-text); }
+  &--green  { color: var(--accent-green-text); }
+  &--red    { color: var(--accent-red-text); }
+  &--yellow { color: var(--accent-yellow-text); }
+}
+
+.section-label {
+  font-size: $fs-caption;
+  color: var(--text-muted);
+  margin: 0 0 $spacing-sm 0;
+}
+
+// ===== SCORE CIRCLE (Lighthouse-style) =====
+.score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+
+  &__ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--green {
+      border-color: var(--accent-green);
+      background: rgba($accent-green, 0.1);
+    }
+    &--orange {
+      border-color: var(--accent-orange);
+      background: rgba($accent-orange, 0.1);
+    }
+    &--red {
+      border-color: var(--accent-red);
+      background: rgba($accent-red, 0.1);
+    }
+  }
+
+  &__value {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    font-weight: $fw-bold;
+  }
+
+  &__label {
+    font-size: $fs-caption;
+    color: var(--text-muted);
+  }
+}

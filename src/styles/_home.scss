@@ -1,0 +1,210 @@
+.home {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+
+  // ===== Hero =====
+
+  &__hero {
+    text-align: center;
+    padding: 3rem 0 3.5rem;
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-color, rgba(128, 128, 128, 0.35));
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    line-height: 1.05;
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+
+  &__desc {
+    max-width: 46ch;
+    margin: 0 auto;
+    opacity: 0.75;
+    font-size: 1.05rem;
+  }
+
+  &__stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.75rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    opacity: 0.7;
+
+    strong {
+      font-size: 1.15rem;
+      opacity: 1;
+      margin-right: 0.3rem;
+    }
+  }
+
+  // ===== Sections =====
+
+  &__section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2.5rem 0 1.25rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 0.75rem;
+  }
+
+  // ===== Footer note =====
+
+  &__note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color, rgba(128, 128, 128, 0.35));
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+      opacity: 0.6;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+  }
+}
+
+// ===== Card =====
+
+.home-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color, rgba(128, 128, 128, 0.35));
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+  position: relative;
+  opacity: 0;
+  animation: home-card-in 0.35s ease forwards;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent-color, rgba(120, 120, 255, 0.6));
+    transform: translateY(-2px);
+
+    .home-card__arrow {
+      opacity: 0.6;
+      transform: translateX(2px);
+    }
+  }
+
+  &__num {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: var(--surface-hover, rgba(128, 128, 128, 0.14));
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  &__desc {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    opacity: 0.65;
+  }
+
+  &__meta {
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    opacity: 0.55;
+  }
+
+  &__status {
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    opacity: 0.5;
+  }
+
+  // Sits in the flex flow, not absolutely — long titles can never overlap it
+  &__score {
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: var(--surface-hover, rgba(128, 128, 128, 0.14));
+    opacity: 0.7;
+  }
+
+  &__arrow {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    align-self: center;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  &--disabled {
+    cursor: default;
+    opacity: 0.45;
+
+    &:hover {
+      border-color: var(--border-color, rgba(128, 128, 128, 0.35));
+      transform: none;
+    }
+  }
+}
+
+@keyframes home-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

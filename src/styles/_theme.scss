@@ -1,0 +1,155 @@
+// ============================================
+// QA COURSE - THEME SYSTEM
+// ============================================
+// Defines CSS custom properties for dark/light themes.
+// Accent colors stay as SCSS vars (unchanged between themes).
+// Only "surface" colors (backgrounds, text, borders, shadows) switch.
+
+// ===== DARK THEME (default) =====
+:root,
+[data-theme="dark"] {
+  // Backgrounds
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: rgba(51, 65, 85, 0.5);
+  --bg-card-solid: rgba(51, 65, 85, 0.7);
+  --bg-card-dark: rgba(30, 41, 59, 0.7);
+  --bg-card-darker: rgba(30, 41, 59, 0.5);
+  --bg-glass: rgba(30, 41, 59, 0.7);
+
+  // Text
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-disabled: #7a8ba0;
+  --text-dark: #475569;
+
+  // Borders
+  --border-subtle: 1px solid rgba(148, 163, 184, 0.1);
+  --border-light: 1px solid rgba(148, 163, 184, 0.2);
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+  // Gradients (as full values)
+  --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+
+  // Selection
+  --selection-bg: rgba(139, 92, 246, 0.3);
+  --selection-color: white;
+
+  // Scrollbar
+  --scrollbar-track: #1e293b;
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #64748b;
+
+  // Code block
+  --code-string: #a5f3fc;
+
+  // Accent colors as CSS custom properties (for inline styles in JSX)
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-green: #22c55e;
+  --accent-orange: #f97316;
+  --accent-red: #ef4444;
+  --accent-cyan: #06b6d4;
+  --accent-pink: #ec4899;
+  --accent-yellow: #eab308;
+
+  // Accent text variants (for light theme readability adjustments)
+  --accent-blue-text: #60a5fa;
+  --accent-purple-text: #a78bfa;
+  --accent-green-text: #4ade80;
+  --accent-orange-text: #fb923c;
+  --accent-red-text: #f87171;
+  --accent-cyan-text: #22d3ee;
+  --accent-pink-text: #f472b6;
+  --accent-yellow-text: #fbbf24;
+
+  // Badge text (lighter variants for dark bg)
+  --accent-blue-badge: #93c5fd;
+  --accent-purple-badge: #c4b5fd;
+  --accent-green-badge: #86efac;
+  --accent-orange-badge: #fdba74;
+  --accent-red-badge: #fca5a5;
+  --accent-cyan-badge: #67e8f9;
+  --accent-pink-badge: #f9a8d4;
+  --accent-yellow-badge: #fbbf24;
+}
+
+// ===== LIGHT THEME =====
+[data-theme="light"] {
+  // Backgrounds
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: rgba(241, 245, 249, 0.8);
+  --bg-card-solid: rgba(226, 232, 240, 0.8);
+  --bg-card-dark: rgba(241, 245, 249, 0.9);
+  --bg-card-darker: rgba(248, 250, 252, 0.9);
+  --bg-glass: rgba(255, 255, 255, 0.8);
+
+  // Text
+  --text-primary: #1e293b;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --text-disabled: #94a3b8;
+  --text-dark: #cbd5e1;
+
+  // Borders
+  --border-subtle: 1px solid rgba(148, 163, 184, 0.25);
+  --border-light: 1px solid rgba(148, 163, 184, 0.35);
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+  // Gradients
+  --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+
+  // Selection
+  --selection-bg: rgba(139, 92, 246, 0.2);
+  --selection-color: #1e293b;
+
+  // Scrollbar
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+
+  // Code block
+  --code-string: #0891b2;
+
+  // Accent colors as CSS custom properties (darker in light theme for white text on solid bg)
+  --accent-blue: #2563eb;
+  --accent-purple: #7c3aed;
+  --accent-green: #16a34a;
+  --accent-orange: #ea580c;
+  --accent-red: #dc2626;
+  --accent-cyan: #0891b2;
+  --accent-pink: #db2777;
+  --accent-yellow: #ca8a04;
+
+  // Accent text variants (darker for light backgrounds)
+  --accent-blue-text: #2563eb;
+  --accent-purple-text: #7c3aed;
+  --accent-green-text: #16a34a;
+  --accent-orange-text: #c2410c;
+  --accent-red-text: #b91c1c;
+  --accent-cyan-text: #0e7490;
+  --accent-pink-text: #be185d;
+  --accent-yellow-text: #a16207;
+
+  // Badge text (darker for light theme)
+  --accent-blue-badge: #1d4ed8;
+  --accent-purple-badge: #6d28d9;
+  --accent-green-badge: #15803d;
+  --accent-orange-badge: #c2410c;
+  --accent-red-badge: #b91c1c;
+  --accent-cyan-badge: #0e7490;
+  --accent-pink-badge: #be185d;
+  --accent-yellow-badge: #a16207;
+}

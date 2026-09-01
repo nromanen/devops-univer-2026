@@ -1,0 +1,80 @@
+@use './variables' as *;
+
+// ============================================
+// QA COURSE - MIXINS
+// ============================================
+
+// ===== TYPOGRAPHY =====
+
+@mixin font-heading {
+  font-family: $font-heading;
+}
+
+@mixin text-slide-title {
+  font-family: $font-heading;
+  font-size: $fs-slide-title;
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+}
+
+@mixin text-section-title {
+  font-family: $font-heading;
+  font-size: $fs-section-title;
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+}
+
+@mixin text-card-title {
+  font-family: $font-heading;
+  font-size: $fs-card-title;
+  font-weight: $fw-bold;
+  color: var(--text-primary);
+}
+
+@mixin text-english {
+  font-size: $fs-caption;
+  font-style: italic;
+  color: var(--text-disabled);
+}
+
+// ===== LAYOUT =====
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ===== CARDS =====
+
+@mixin card-base {
+  background: var(--bg-card);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+}
+
+@mixin card-bordered($color: transparent) {
+  @include card-base;
+  border-left: 4px solid $color;
+}
+
+// ===== TRANSITIONS =====
+
+@mixin transition-base {
+  transition: all $transition-base;
+}
+
+@mixin hover-lift {
+  transition: transform $transition-slow, box-shadow $transition-slow;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
