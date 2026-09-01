@@ -10,6 +10,6 @@ export default defineConfig({
       }
     }
   },
-  base: '/',
-  //base: '/qc-2026/lectures/' 
+  //base: '/',
+  base: '/devops-univer-2026/' 
 })
