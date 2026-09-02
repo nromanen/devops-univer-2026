@@ -4,7 +4,7 @@ import { Terminal, ArrowRight } from 'lucide-react';
 // Course repository. Lab texts live in <repo>/labs/<lab-id>/README.md
 // GitHub renders README.md automatically when a folder URL is opened,
 // so /tree/main/labs/lab-01 is enough — no /blob/.../README.md needed.
-const REPO = 'https://github.com/<org>/<repo>';
+const REPO = 'https://github.com/nromanen/devops-univer-2026';
 const LABS_PATH = 'tree/main/labs';
 
 // status: 'ready' | 'draft'
