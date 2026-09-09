@@ -18,7 +18,6 @@ devops-portfolio/
 ├── .editorconfig
 ├── .github/
 │   └── pull_request_template.md
-├── docs/
 ├── lab-01/
 │   ├── README.md          # звіт по цій роботі
 │   └── assets/            # скріншоти
