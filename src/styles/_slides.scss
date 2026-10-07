@@ -793,3 +793,103 @@
     }
   }
 }
+
+/* ============================================================
+   SELF-STUDY MARKER
+   Append to the existing lecture stylesheet.
+   Colour values use fallbacks — if the deck already defines
+   its own cyan/border/muted tokens, keep the var() names and
+   drop the fallbacks.
+   ============================================================ */
+
+/* --- corner badge on the slide --- */
+
+.slide-host {
+  position: relative;
+}
+
+.self-study-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  z-index: 2;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-cyan-border, rgba(34, 211, 238, 0.35));
+  border-radius: 999px;
+  background: var(--color-cyan-bg, rgba(34, 211, 238, 0.08));
+
+  color: var(--color-cyan, #22d3ee);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.self-study-badge__icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* --- dot on the numbered indicator --- */
+
+.slide-nav__indicator--self-study {
+  position: relative;
+}
+
+.slide-nav__indicator--self-study::after {
+  content: '';
+  position: absolute;
+  top: 0.15rem;
+  right: 0.15rem;
+
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--color-cyan, #22d3ee);
+}
+
+/* --- right-hand side of the nav bar --- */
+
+.slide-nav__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.self-study-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-border, rgba(148, 163, 184, 0.3));
+  border-radius: 999px;
+  background: transparent;
+
+  color: var(--color-text-muted, #94a3b8);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.self-study-filter:hover {
+  border-color: var(--color-cyan-border, rgba(34, 211, 238, 0.35));
+  color: var(--color-cyan, #22d3ee);
+}
+
+.self-study-filter[aria-pressed='true'] {
+  border-color: var(--color-cyan-border, rgba(34, 211, 238, 0.35));
+  background: var(--color-cyan-bg, rgba(34, 211, 238, 0.08));
+  color: var(--color-cyan, #22d3ee);
+}
+
+@media print {
+  .self-study-filter {
+    display: none;
+  }
+}

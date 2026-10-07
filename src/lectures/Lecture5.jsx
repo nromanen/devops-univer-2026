@@ -79,10 +79,6 @@ function TitleSlide() {
   );
 }
 
-// ============================================
-// STUBS — replaced block by block
-// ============================================
-
 function TodoSlide({ title }) {
   return (
     <div className="slide">

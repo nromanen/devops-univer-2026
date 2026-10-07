@@ -12,7 +12,7 @@ import {
   Plug, Split, Timer,
   Globe, ListChecks,
   Search, Hash, Route, MapPin, Lock, Server, ArrowRight, Wrench,
-  Terminal,KeyRound, ShieldCheck, Link2, RefreshCw, Stamp, CalendarClock,
+  Terminal, KeyRound, ShieldCheck, Link2, RefreshCw, Stamp, CalendarClock,
   AlertTriangle, Fingerprint, MonitorSmartphone, Unlock, ShieldOff, Send,
   XCircle, HelpCircle, BookOpen, MessageSquare, ThumbsDown, Flag, Stethoscope,
   Construction,
@@ -25,56 +25,56 @@ import {
 
 const slides = [
   // --- Intro ---
-  { id: 1,  title: 'Титульний слайд',              component: TitleSlide },
-  { id: 2,  title: 'Мета лекції',                  component: ObjectivesSlide },
+  { id: 1, title: 'Титульний слайд', component: TitleSlide },
+  { id: 2, title: 'Мета лекції', component: ObjectivesSlide },
 
   // --- Request path ---
-  { id: 3,  title: 'Шлях запиту',                  component: RequestPathSlide },
-  { id: 4,  title: 'Де що ламається',              component: WhereItBreaksSlide },
+  { id: 3, title: 'Шлях запиту', component: RequestPathSlide },
+  { id: 4, title: 'Де що ламається', component: WhereItBreaksSlide },
 
   // --- Addressing ---
-  { id: 5,  title: 'Адреса, порт, сокет',          component: AddressPortSocketSlide },
-  { id: 6,  title: 'Хто зайняв порт',              component: PortInUseSlide },
-  { id: 7,  title: 'Чому ping — не діагностика',   component: PingIsNotDiagnosticsSlide },
+  { id: 5, title: 'Адреса, порт, сокет', component: AddressPortSocketSlide },
+  { id: 6, title: 'Хто зайняв порт', component: PortInUseSlide },
+  { id: 7, title: 'Чому ping — не діагностика', component: PingIsNotDiagnosticsSlide },
 
   // --- DNS ---
-  { id: 8,  title: 'TTL і переїзд сервісу',        component: DnsTtlSlide },
-  { id: 9,  title: 'dig на практиці',              component: DigSlide },
+  { id: 8, title: 'TTL і переїзд сервісу', component: DnsTtlSlide },
+  { id: 9, title: 'dig на практиці', component: DigSlide },
 
   // --- Entry point ---
-  { id: 10, title: 'Одна точка входу',             component: EntryPointSlide },
-  { id: 11, title: 'Що робить зворотний проксі',   component: ReverseProxySlide },
+  { id: 10, title: 'Одна точка входу', component: EntryPointSlide },
+  { id: 11, title: 'Що робить зворотний проксі', component: ReverseProxySlide },
   { id: 12, title: 'Балансування і health checks', component: LoadBalancingSlide },
-  { id: 13, title: 'X-Forwarded-For',              component: ForwardedForSlide },
+  { id: 13, title: 'X-Forwarded-For', component: ForwardedForSlide },
 
   // --- HTTP ---
-  { id: 14, title: 'Запит і відповідь',            component: HttpAnatomySlide },
-  { id: 15, title: 'Коди відповіді за класами',    component: StatusClassesSlide },
-  { id: 16, title: 'Коди, які треба знати',        component: StatusCodesSlide },
-  { id: 17, title: '502 проти 504',                component: BadGatewayVsTimeoutSlide },
-  { id: 18, title: 'Заголовки та інфраструктура',  component: HeadersSlide },
+  { id: 14, title: 'Запит і відповідь', component: HttpAnatomySlide },
+  { id: 15, title: 'Коди відповіді за класами', component: StatusClassesSlide },
+  { id: 16, title: 'Коди, які треба знати', component: StatusCodesSlide },
+  { id: 17, title: '502 проти 504', component: BadGatewayVsTimeoutSlide },
+  { id: 18, title: 'Заголовки та інфраструктура', component: HeadersSlide },
 
   // --- TLS ---
-  { id: 19, title: 'Що дає TLS',                   component: TlsBasicsSlide },
-  { id: 20, title: 'Ланцюг довіри',                component: TrustChainSlide },
-  { id: 21, title: 'ACME і протермінування',       component: AcmeSlide },
-  { id: 22, title: 'Діагностика TLS',              component: TlsDiagnosticsSlide },
+  { id: 19, title: 'Що дає TLS', component: TlsBasicsSlide },
+  { id: 20, title: 'Ланцюг довіри', component: TrustChainSlide },
+  { id: 21, title: 'ACME і протермінування', component: AcmeSlide },
+  { id: 22, title: 'Діагностика TLS', component: TlsDiagnosticsSlide },
 
   // --- CORS ---
-  { id: 23, title: 'Що таке origin',               component: OriginSlide },
-  { id: 24, title: 'curl працює, браузер — ні',    component: CorsBrowserOnlySlide },
-  { id: 25, title: 'Preflight-запит',              component: PreflightSlide },
-  { id: 26, title: 'Чому «*» не рішення',          component: CorsWildcardSlide },
+  { id: 23, title: 'Що таке origin', component: OriginSlide },
+  { id: 24, title: 'curl працює, браузер — ні', component: CorsBrowserOnlySlide },
+  { id: 25, title: 'Preflight-запит', component: PreflightSlide },
+  { id: 26, title: 'Чому «*» не рішення', component: CorsWildcardSlide },
 
   // --- Troubleshooting ---
-  { id: 27, title: 'Алгоритм звуження',            component: NarrowingAlgorithmSlide },
-  { id: 28, title: 'Інструменти діагностики',      component: DiagnosticToolsSlide },
+  { id: 27, title: 'Алгоритм звуження', component: NarrowingAlgorithmSlide },
+  { id: 28, title: 'Інструменти діагностики', component: DiagnosticToolsSlide },
   { id: 29, title: 'Довести, що справа не в коді', component: ProveItSlide },
 
   // --- Outro ---
-  { id: 30, title: 'Типові помилки',               component: CommonMistakesSlide },
-  { id: 31, title: 'Підсумки',                     component: SummarySlide },
-  { id: 32, title: 'Питання?',                     component: QuestionsSlide },
+  { id: 30, title: 'Типові помилки', component: CommonMistakesSlide },
+  { id: 31, title: 'Підсумки', component: SummarySlide },
+  // { id: 32, title: 'Питання?', component: QuestionsSlide },
 ];
 
 export default function Lecture3() {
@@ -198,8 +198,7 @@ function RequestPathSlide() {
           <p className="fs-lg text-primary" style={{ margin: 0 }}>
             Між натисканням Enter і появою відповіді запит проходить чотири етапи.
             Кожен може завершитися невдало — і кожен дає{' '}
-            <strong>свій характерний симптом</strong>. Уся лекція побудована навколо
-            цього ланцюжка.
+            <strong>свій характерний симптом</strong>.
           </p>
         </div>
 
@@ -306,6 +305,7 @@ function WhereItBreaksSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-3">
+            <div className="numbered-list__number">2</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">
                 <span className="font-mono text-red">connection refused</span>
@@ -318,6 +318,7 @@ function WhereItBreaksSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-3">
+            <div className="numbered-list__number">3</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">
                 <span className="font-mono text-orange">connection timed out</span>
@@ -331,6 +332,7 @@ function WhereItBreaksSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-4">
+            <div className="numbered-list__number">4</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">
                 <span className="font-mono text-orange">certificate has expired</span>
@@ -343,6 +345,7 @@ function WhereItBreaksSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-5">
+            <div className="numbered-list__number">5</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">
                 <span className="font-mono text-yellow">502 / 504</span>
@@ -479,15 +482,15 @@ function PortInUseSlide() {
 
         <div className="slide-grid slide-grid--2col mb-xl">
           <CodeBlock title="Хто слухає порт" color="blue">
-{`lsof -i :3000
+            {`lsof -i :3000
 ss -tlnp | grep 3000
 
 # зупинити процес за його PID
-kill <PID>`}
+kill <PID> (kill -9 <PID>)`}
           </CodeBlock>
 
           <CodeBlock title="Усі відкриті порти сервера" color="cyan">
-{`ss -tlnp
+            {`ss -tlnp
 # t — TCP, l — listening,
 # n — числа замість імен, p — процес
 
@@ -505,7 +508,7 @@ netstat -tlnp   # старіший аналог`}
           <div className="numbered-list__item fade-in-delay-4">
             <div className="numbered-list__number">2</div>
             <p className="numbered-list__text">
-              Переконатися, що це ваш процес, а не системний сервіс на тому ж порту
+              Переконатися, що це ваш процес, а не системний сервіс, що зайняв цей порт
             </p>
           </div>
           <div className="numbered-list__item fade-in-delay-5">
@@ -560,8 +563,7 @@ function PingIsNotDiagnosticsSlide() {
               </h3>
             </div>
             <p className="fs-body text-secondary">
-              Теж нічого не доводить. ICMP заблокований за замовчуванням у більшості
-              хмарних провайдерів, а в мінімальних образах системи його просто немає
+              Теж нічого не доводить. ICMP заблокований за замовчуванням у більшості хмарних провайдерів часто ріжеться на периметрі мережі
             </p>
           </div>
         </div>
@@ -635,23 +637,22 @@ function DnsTtlSlide() {
         />
 
         <div className="slide-grid slide-grid--2col mb-xl">
-  <div className="definition definition--blue fade-in-delay-2">
-    <p className="definition__term definition__term--blue">TTL — Time To Live</p>
-    <p className="definition__description">
-      Число в секундах, яке власник домену задає разом із записом. Кеш зберігає
-      відповідь рівно стільки й лише потім питає ще раз. Типові значення:
-      300 (5 хвилин) для того, що може змінитися, 86400 (доба) для стабільного
-    </p>
-  </div>
-  <div className="definition definition--purple fade-in-delay-2">
-    <p className="definition__term definition__term--purple">Зворотний відлік</p>
-    <p className="definition__description">
-      У відповіді <span className="font-mono">dig</span> TTL показує не вихідне
-      значення, а <strong>скільки лишилося</strong>. Те саме ім'я через хвилину
-      покаже менше число — за цим видно, що відповідь із кешу, а не свіжа
-    </p>
-  </div>
-</div>
+          <div className="definition definition--blue fade-in-delay-2">
+            <p className="definition__term definition__term--blue">TTL — Time To Live</p>
+            <p className="definition__description">
+              Число в секундах, яке власник домену задає для кожного DNS-запису. Кеш зберігає відповідь не довше, ніж указано, і лише потім питає ще раз. Типові значення:
+              300 (5 хвилин) для того, що може змінитися, 86400 (доба) для стабільного
+            </p>
+          </div>
+          <div className="definition definition--purple fade-in-delay-2">
+            <p className="definition__term definition__term--purple">Зворотний відлік</p>
+            <p className="definition__description">
+              У відповіді <span className="font-mono">dig</span> TTL показує не вихідне
+              значення, а <strong>скільки лишилося</strong>. Те саме ім'я через хвилину
+              покаже менше число — за цим видно, що відповідь із кешу, а не свіжа
+            </p>
+          </div>
+        </div>
 
         <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
           <p className="fs-lg text-primary" style={{ margin: 0 }}>
@@ -736,24 +737,24 @@ function DigSlide() {
 
         <p className="fs-body text-secondary mb-base fade-in-delay-1">
           Перше питання будь-якої мережевої проблеми: ім'я взагалі перетворюється на
-          адресу, і чи на ту, яку ви очікуєте? Відповідь займає одну команду.
+          адресу, і чи на ту, яку ви очікуєте? Для відповіді достатньо однієї команди.
         </p>
 
         <div className="slide-grid slide-grid--2col mb-xl">
           <CodeBlock title="Швидка перевірка" color="blue">
-{`dig +short api.example.com
+            {`dig +short api.example.com
 # лише адреси, без службового виводу
 
-dig api.example.com
-# повна відповідь: секція ANSWER і TTL`}
+dig +noall +answer api.example.com
+# те саме плюс TTL, клас і тип запису`}
           </CodeBlock>
 
-          <CodeBlock title="Обійти кеш провайдера" color="purple">
-{`dig @8.8.8.8 api.example.com
-# запит до конкретного резолвера
+          <CodeBlock title="Порівняти різні резолвери" color="purple">
+            {`dig @8.8.8.8 api.example.com
+# запит до конкретного резолвера (Google)
 
 dig @1.1.1.1 api.example.com
-# порівняти відповіді двох резолверів`}
+# запит до іншого резолвера (Cloudflare)`}
           </CodeBlock>
         </div>
 
@@ -761,7 +762,7 @@ dig @1.1.1.1 api.example.com
           <div className="definition definition--green fade-in-delay-2">
             <p className="definition__term definition__term--green">Порожня відповідь</p>
             <p className="definition__description">
-              Запису немає або він ще не створений. До сервісу навіть не намагалися
+              Запису в DNS-зоні немає або він ще не створений. До сервісу навіть не намагалися
               достукатися
             </p>
           </div>
@@ -879,9 +880,9 @@ function EntryPointSlide() {
         </div>
 
         <HighlightBox color="cyan">
-          Ця роль має різні імена залежно від технології — зворотний проксі, шлюз,
+          Ця точка входу має різні імена залежно від технології — зворотний проксі, шлюз,
           контролер вхідного трафіку, балансувальник. Суть однакова: приймає ззовні,
-          розподіляє всередину. Далі говоримо про <strong>роль</strong>, а не про продукт.
+          розподіляє всередину.
         </HighlightBox>
       </div>
     </div>
@@ -948,8 +949,7 @@ function ReverseProxySlide() {
         <HighlightBox color="orange" icon={AlertTriangle}>
           Наслідок для діагностики: помилку може повернути{' '}
           <strong>сам проксі</strong>, навіть не звернувшись до вашого сервісу.
-          У журналах застосунку такого запиту не буде взагалі — і це збиває з пантелику
-          найчастіше.
+          У журналах застосунку такого запиту не буде взагалі — і це типова причина хибної діагностики.
         </HighlightBox>
       </div>
     </div>
@@ -1006,10 +1006,8 @@ function LoadBalancingSlide() {
             </h3>
           </div>
           <p className="fs-body text-secondary" style={{ margin: 0 }}>
-            Якщо один із трьох екземплярів упав, а перевірок немає — точка входу
-            продовжує слати йому кожен третій запит. Користувач бачить помилку
-            приблизно в третині випадків, і це найгірший вид збою: система «начебто
-            працює», а скарги плавають.
+            Якщо один із екземплярів упав, а перевірок немає — точка входу продовжує надсилати йому свою частку запитів.
+            Користувачі бачать помилку в частині випадків, і це найгірший вид збою: система «начебто працює», а скарги плавають.
           </p>
         </div>
 
@@ -1061,7 +1059,7 @@ function ForwardedForSlide() {
         </p>
 
         <CodeBlock title="Заголовки, що додає точка входу" color="purple">
-{`X-Forwarded-For: 203.0.113.45, 10.0.0.8
+          {`X-Forwarded-For: 203.0.113.45, 10.0.0.8
 # ланцюжок адрес: клієнт, далі кожен проксі на шляху
 
 X-Forwarded-Proto: https
@@ -1084,23 +1082,17 @@ X-Forwarded-Host: api.example.com
 
         <div className="highlight-box highlight-box--blue mt-base">
           <p className="highlight-box__text fs-body-sm">
-            <span className="font-mono">X-Forwarded-Proto</span> пояснює ще один
-            класичний баг: сервіс усередині отримує звичайний HTTP, будує посилання
-            з <span className="font-mono">http://</span> — і користувач вилітає з
-            захищеного з'єднання посеред сесії.
+            Ще один класичний баг: якщо сервіс не читає{' '}
+            <span className="font-mono">X-Forwarded-Proto</span>, він бачить звичайний
+            HTTP і вважає з'єднання незахищеним. Далі він будує посилання з{' '}
+            <span className="font-mono">http://</span>, не ставить cookie з прапорцем{' '}
+            <span className="font-mono">Secure</span>, а браузер блокує мішаний вміст.
           </p>
         </div>
       </div>
     </div>
   );
 }
-
-// ============================================================
-// BLOCK: HTTP — slides 14-18
-// Replace the matching stub functions in Lecture3.jsx with these.
-// Add to the lucide-react import:
-//   FileText, Hash, ListChecks, Split, Tags, Timer, ShieldAlert
-// ============================================================
 
 // ---------- 14. REQUEST AND RESPONSE ----------
 
@@ -1122,7 +1114,7 @@ function HttpAnatomySlide() {
 
         <div className="slide-grid slide-grid--2col mb-xl">
           <CodeBlock title="Запит" color="blue">
-{`POST /api/items HTTP/1.1
+            {`POST /api/items HTTP/1.1
 Host: api.example.com
 Content-Type: application/json
 Authorization: Bearer <token>
@@ -1131,7 +1123,7 @@ Authorization: Bearer <token>
           </CodeBlock>
 
           <CodeBlock title="Відповідь" color="green">
-{`HTTP/1.1 201 Created
+            {`HTTP/1.1 201 Created
 Content-Type: application/json
 Location: /api/items/42
 
@@ -1143,8 +1135,7 @@ Location: /api/items/42
           <div className="definition definition--blue fade-in-delay-2">
             <p className="definition__term definition__term--blue">Стартовий рядок</p>
             <p className="definition__description">
-              У запиті — метод і шлях. У відповіді — код стану. Найінформативніший
-              рядок в обох випадках
+              Перший рядок запиту містить метод і шлях, перший рядок відповіді — код стану. В обох випадках це найінформативніша частина повідомлення
             </p>
           </div>
           <div className="definition definition--purple fade-in-delay-3">
@@ -1157,25 +1148,28 @@ Location: /api/items/42
           <div className="definition definition--green fade-in-delay-4">
             <p className="definition__term definition__term--green">Тіло</p>
             <p className="definition__description">
-              Необов'язкове. Відокремлене від заголовків порожнім рядком —
-              звідси класична помилка з зайвим переносом
+              Необов'язкове. Відокремлене від заголовків порожнім рядком — це єдиний роздільник у повідомленні
             </p>
           </div>
         </div>
 
-        <CodeBlock title="Побачити це живцем" color="cyan">
-{`curl -v https://api.example.com/health
+        <div className="slide-grid slide-grid--2col mb-base">
+          <CodeBlock title="Подивитися обмін" color="cyan">
+            {`curl -v https://api.example.com/health
 # > — те, що надіслали, < — те, що отримали
 
 curl -i https://api.example.com/health
 # лише відповідь: заголовки разом із тілом`}
-        </CodeBlock>
+          </CodeBlock>
 
-        <HighlightBox color="blue">
-          <span className="font-mono">curl -v</span> — найчастіше вживана команда всієї
-          цієї лекції. Вона показує весь обмін: резолвінг імені, встановлення з'єднання,
-          сертифікат, надіслані заголовки й повну відповідь.
-        </HighlightBox>
+          <CodeBlock title="Надіслати той самий запит" color="purple">
+            {`curl -X POST https://api.example.com/api/items \\
+  -H 'Content-Type: application/json' \\
+  -H 'Authorization: Bearer <token>' \\
+  -d '{"title": "Нова річ"}'`}
+          </CodeBlock>
+        </div>
+
       </div>
     </div>
   );
@@ -1262,9 +1256,9 @@ function StatusCodesSlide() {
             <DefBadge term="200" description="OK — стандартна успішна відповідь" color="green" />
             <DefBadge term="201" description="Created — ресурс створено, адреса в Location" color="green" />
             <DefBadge term="204" description="No Content — успіх, тіла немає. Типово для видалення" color="green" />
-            <DefBadge term="301" description="Moved Permanently — назавжди. Браузер запам'ятає й кешуватиме" color="blue" nowrap />
-            <DefBadge term="302" description="Found — тимчасово. Не кешується, можна відкотити" color="blue" />
-            <DefBadge term="304" description="Not Modified — не змінилося, беріть із кешу" color="blue" />
+            <DefBadge term="301" description="Moved Permanently — ресурс переїхав назавжди. Браузер запам'ятає нову адресу й кешуватиме" color="blue" nowrap />
+            <DefBadge term="302" description="Found — ресурс тимчасово за іншою адресою. Не кешується, можна відкотити" color="blue" />
+            <DefBadge term="304" description="Not Modified — ресурс не змінився, беріть із кешу. Генерує фреймворк за вашим ETag" color="blue" />
           </div>
 
           <div className="flex flex-col gap-sm fade-in-delay-2">
@@ -1272,6 +1266,7 @@ function StatusCodesSlide() {
             <DefBadge term="401" description="Unauthorized — ви не представилися" color="orange" />
             <DefBadge term="403" description="Forbidden — представилися, але прав немає" color="orange" />
             <DefBadge term="404" description="Not Found — такого шляху немає" color="orange" />
+            <DefBadge term="415" description="Unsupported Media Type — сервіс не приймає такий Content-Type" color="orange" />
             <DefBadge term="429" description="Too Many Requests — спрацювало обмеження частоти" color="orange" nowrap />
             <DefBadge term="500" description="Internal Server Error — сервіс упав на обробці" color="red" nowrap />
           </div>
@@ -1283,17 +1278,16 @@ function StatusCodesSlide() {
             можна». Перше лікується токеном, друге — правами. Плутають постійно
           </HighlightBox>
           <HighlightBox color="blue">
-            <strong>301 проти 302</strong> — 301 браузер запам'ятовує надовго.
-            Помилково поставили 301 — користувачі йтимуть за старою адресою навіть
-            після виправлення
+            <strong>301 проти 302</strong> — 302 ви повертатимете самі, 301 частіше
+            налаштовується в проксі. Різниця в кешуванні: помилково поставили 301 —
+            користувачі йтимуть за старою адресою навіть після виправлення
           </HighlightBox>
         </div>
 
         <div className="highlight-box highlight-box--orange mt-base">
           <p className="highlight-box__text fs-body-sm">
             <span className="font-mono">429</span> варто знати окремо: він означає,
-            що ваш сервіс живий і здоровий, а обмеження наклала точка входу. Часто
-            з'являється саме тоді, коли ви налагоджуєте щось у циклі.
+            що ваш сервіс живий і здоровий, а обмеження наклала точка входу. Часто з'являється саме під час налагодження, коли ви повторюєте той самий запит десятки разів поспіль.
           </p>
         </div>
       </div>
@@ -1404,7 +1398,7 @@ function HeadersSlide() {
             icon={FileText}
             title="Content-Type"
             subtitle="Формат тіла"
-            description="Каже, як читати вміст. Неправильне значення — і сервіс поверне 400 на цілком коректні дані"
+            description="Каже, як читати тіло. Найчастіші: application/json, text/html, application/x-www-form-urlencoded, multipart/form-data. Не той тип — 415"
             color="blue"
             delay={1}
           />
@@ -1420,7 +1414,7 @@ function HeadersSlide() {
             icon={Clock}
             title="Cache-Control"
             subtitle="Кому і скільки кешувати"
-            description="Керує кешем браузера й проміжних вузлів. Часта причина «я оновив, а користувачі бачать старе»"
+            description="max-age=31536000 для статики з хешем в імені, no-cache для HTML — кешувати, але щоразу перепитувати. Переплутали — після деплою користувачі бачать старе"
             color="green"
             delay={3}
           />
@@ -1445,21 +1439,15 @@ function HeadersSlide() {
         </div>
 
         <HighlightBox color="orange" icon={AlertTriangle}>
-          Заголовок, який додав клієнт, можна підробити. Заголовок, який додала ваша
-          точка входу, — довірений. Тому проксі має{' '}
-          <strong>перезаписувати</strong> такі заголовки, а не дописувати до них.
+          Заголовку, який надіслав клієнт, довіряти не можна — підробити його
+          тривіально. Довіряти можна лише тому, що дописала ваша точка входу.
+          Тому граничний проксі <strong>налаштовують</strong> так, щоб він
+          перезаписував ці заголовки, а не доповнював чужі.
         </HighlightBox>
       </div>
     </div>
   );
 }
-
-// ============================================================
-// BLOCK: TLS — slides 19-22
-// Replace the matching stub functions in Lecture3.jsx with these.
-// Add to the lucide-react import:
-//   Lock, KeyRound, ShieldCheck, Link2, RefreshCw, Stamp, CalendarClock
-// ============================================================
 
 // ---------- 19. WHAT TLS GIVES YOU ----------
 
@@ -1470,13 +1458,12 @@ function TlsBasicsSlide() {
         <SlideHeader
           icon={Lock}
           title="Що дає TLS"
-          subtitle="Three Guarantees, Not One"
+          subtitle="Transport Layer Security - Three Guarantees, Not One"
         />
 
         <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
           <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            «HTTPS — це шифрування» — половина правди. Шифрування без двох інших
-            гарантій нічого не варте: ви б надійно шифрували канал{' '}
+            HTTPS — це не тільки шифрування. TLS дає три гарантії, і без двох інших шифрування нічого не варте: ви б надійно шифрували канал{' '}
             <strong>невідомо з ким</strong>.
           </p>
         </div>
@@ -1500,7 +1487,7 @@ function TlsBasicsSlide() {
           />
           <InfoCardFeatured
             icon={Stamp}
-            title="Автентичність"
+            title="Автентифікація"
             subtitle="Authentication"
             description="Ви говорите саме з тим сервером, чиє ім'я набрали. Це і є головна робота сертифіката"
             color="green"
@@ -1548,9 +1535,7 @@ function TrustChainSlide() {
         />
 
         <p className="fs-body text-secondary mb-base fade-in-delay-1">
-          Сертифікат — це заява «цей ключ належить цьому імені», підписана тим, кому
-          браузер уже довіряє. Перевірка йде вгору по ланцюжку, поки не впреться в
-          корінь, зашитий в операційній системі.
+          Сертифікат — це заява «цей ключ належить цьому імені», підписана тим, кому браузер уже довіряє. Перевірка йде вгору по ланцюжку до кореневого сертифіката зі сховища операційної системи.
         </p>
 
         <div className="flow-diagram mb-xl fade-in-delay-2">
@@ -1586,9 +1571,7 @@ function TrustChainSlide() {
               </h3>
             </div>
             <p className="fs-body text-secondary">
-              Ланцюжок обривається на першому кроці: підписав сам себе, довіряти немає
-              підстав. Браузер показує попередження на весь екран. Для локальної
-              розробки нормально, назовні — ні
+              Ланцюжок обривається на першому кроці: підписав сам себе, довіряти немає підстав. Браузер показує попередження замість сторінки. Для локальної розробки нормально, назовні — ні
             </p>
           </div>
 
@@ -1607,7 +1590,7 @@ function TrustChainSlide() {
         </div>
 
         <HighlightBox color="orange" icon={AlertTriangle}>
-          «У браузері відкривається, а <span className="font-mono">curl</span> лається»
+          «У браузері відкривається, а <span className="font-mono">curl</span> повертає помилку»
           — майже завжди неповний ланцюжок. Браузери вміють дотягувати проміжний
           сертифікат самі, інші клієнти — ні.
         </HighlightBox>
@@ -1640,8 +1623,7 @@ function AcmeSlide() {
           <div className="numbered-list__item fade-in-delay-2">
             <div className="numbered-list__number">1</div>
             <p className="numbered-list__text">
-              Клієнт просить сертифікат на ім'я і доводить, що домен його: розміщує
-              файл на сервері або створює тимчасовий DNS-запис
+              Клієнт просить сертифікат на ім'я і доводить, що домен його: розміщує файл на сервері або створює тимчасовий DNS-запис. Це протокол ACME, і на практиці все робить за вас certbot або cert-manager
             </p>
           </div>
           <div className="numbered-list__item fade-in-delay-3">
@@ -1698,7 +1680,7 @@ function TlsDiagnosticsSlide() {
 
         <div className="slide-grid slide-grid--2col mb-xl">
           <CodeBlock title="Строк дії і власник" color="blue">
-{`echo | openssl s_client -connect example.com:443 \\
+            {`echo | openssl s_client -connect example.com:443 -servername example.com 2>/dev/null \\
   | openssl x509 -noout -dates -subject
 
 # notBefore, notAfter — межі строку
@@ -1706,11 +1688,12 @@ function TlsDiagnosticsSlide() {
           </CodeBlock>
 
           <CodeBlock title="Повний ланцюжок" color="purple">
-{`openssl s_client -connect example.com:443 \\
-  -showcerts
+            {`echo | openssl s_client -connect example.com:443 \\
+  -servername example.com -showcerts 2>/dev/null \\
+  | grep -E 's:|i:'
 
-# видно всі сертифікати, які віддав сервер
-# якщо проміжного немає — ось воно`}
+# s: — кому видано, i: — хто підписав
+# одна пара рядків замість двох — немає проміжного`}
           </CodeBlock>
         </div>
 
@@ -1741,11 +1724,12 @@ function TlsDiagnosticsSlide() {
         <div className="outlined-card outlined-card--blue mb-base fade-in-delay-5">
           <p className="fs-body text-secondary" style={{ margin: 0 }}>
             <strong className="text-blue">Швидка перевірка без openssl:</strong>{' '}
-            <span className="font-mono">curl -vI https://example.com</span> — у виводі
-            видно і сертифікат, і результат перевірки. А{' '}
+            <span className="font-mono">curl -v -o /dev/null https://example.com</span> — у виводі
+            видно основні поля сертифіката й результат перевірки. А{' '}
             <span className="font-mono">curl -k</span> вимикає перевірку взагалі:
-            зручно, щоб підтвердити «справа саме в сертифікаті», але в жодному разі
-            не як постійне рішення.
+            зручно, щоб підтвердити «справа саме в сертифікаті», але{' '}
+            <strong>у скрипті, що пішов у продакшн, це перетворює HTTPS на HTTP
+              із зайвими витратами</strong>.
           </p>
         </div>
 
@@ -1758,14 +1742,6 @@ function TlsDiagnosticsSlide() {
     </div>
   );
 }
-
-// ============================================================
-// BLOCK: CORS — slides 23-26
-// Replace the matching stub functions in Lecture3.jsx with these.
-// Add to the lucide-react import:
-//   Fingerprint, MonitorSmartphone, HandshakeIcon is NOT available —
-//   use: Fingerprint, MonitorSmartphone, Shuffle, Unlock, ShieldOff
-// ============================================================
 
 // ---------- 23. WHAT AN ORIGIN IS ----------
 
@@ -1780,13 +1756,21 @@ function OriginSlide() {
         />
 
         <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary text-center" style={{ margin: 0 }}>
-            <span className="font-mono text-blue">схема</span>
+          <p className="fs-lg text-primary text-center font-mono" style={{ margin: 0 }}>
+            <span className="text-blue">https</span>
+            <span className="text-muted">://</span>
+            <span className="text-purple">app.example.com</span>
+            <span className="text-muted">:</span>
+            <span className="text-green">443</span>
+            <span className="text-muted">/users/42</span>
+          </p>
+          <p className="fs-body text-center mt-sm" style={{ marginBottom: 0 }}>
+            <span className="text-blue">схема</span>
             <span className="text-muted"> + </span>
-            <span className="font-mono text-purple">хост</span>
+            <span className="text-purple">хост</span>
             <span className="text-muted"> + </span>
-            <span className="font-mono text-green">порт</span>
-            {' '}— усі три мають збігатися
+            <span className="text-green">порт</span>
+            <span className="text-secondary"> — це і є origin. Шлях у нього не входить</span>
           </p>
         </div>
 
@@ -1809,11 +1793,11 @@ function OriginSlide() {
                 https://app.com/page → https://app.com/api
               </p>
               <p className="fs-body-sm font-mono text-secondary">
-                https://app.com/a → https://app.com/b/c
+                https://app.com → https://app.com:443
               </p>
             </div>
             <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-              Шлях не входить в origin — лише схема, хост і порт
+              Порт зазвичай не пишуть: для https це 443, для http — 80
             </p>
           </div>
 
@@ -1863,6 +1847,11 @@ function CorsBrowserOnlySlide() {
           subtitle="The Restriction Lives in the Browser"
         />
 
+        <p className="fs-body text-secondary mb-base fade-in-delay-1">
+          <strong>CORS</strong> (Cross-Origin Resource Sharing) — механізм, яким сервіс 
+          дозволяє обраним origin читати свої відповіді. Тобто це не заборона, а спосіб 
+          зняти заборону на читання через межу origin.
+        </p>
         <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
           <p className="fs-lg text-primary" style={{ margin: 0 }}>
             Найважливіше речення про CORS: обмеження накладає{' '}
@@ -1901,11 +1890,15 @@ function CorsBrowserOnlySlide() {
         </div>
 
         <CodeBlock title="Дозвіл видає сервіс — у заголовку відповіді" color="purple">
-{`Access-Control-Allow-Origin: https://app.example.com
+          {`Access-Control-Allow-Origin: https://app.example.com
 # кому саме дозволено читати цю відповідь
 
 Access-Control-Allow-Credentials: true
-# чи можна надсилати куки й заголовок Authorization`}
+# чи можна надсилати куки й заголовок Authorization
+
+Access-Control-Allow-Origin: *
+# зірочка не працює разом із Allow-Credentials: true —
+# при куках origin треба вказати явно`}
         </CodeBlock>
 
         <div className="slide-grid slide-grid--2col mt-xl">
@@ -1915,8 +1908,10 @@ Access-Control-Allow-Credentials: true
             дивіться заголовки відповіді
           </HighlightBox>
           <HighlightBox color="blue">
-            Тому CORS не є захистом вашого API. Хто завгодно дістане ті самі дані
-            через <span className="font-mono">curl</span>. Захист — це автентифікація
+            CORS не захищає ваш API — ті самі дані дістане будь-хто через{' '}
+            <span className="font-mono">curl</span>. Він захищає{' '}
+            <strong>сеанс користувача</strong>: без нього чужа вкладка читала б ваші
+            дані вашими ж куками. Захист API — це автентифікація
           </HighlightBox>
         </div>
       </div>
@@ -1979,8 +1974,8 @@ function PreflightSlide() {
             <p className="definition__description">
               PUT, PATCH, DELETE, або{' '}
               <span className="font-mono">Content-Type: application/json</span>, або
-              власний заголовок на кшталт{' '}
-              <span className="font-mono">Authorization</span>
+              заголовок типу{' '}
+              <span className="font-mono">Authorization</span>, якого немає в дозволеному списку
             </p>
           </div>
         </div>
@@ -2090,12 +2085,6 @@ function CorsWildcardSlide() {
     </div>
   );
 }
-// ============================================================
-// BLOCKS: TROUBLESHOOTING + OUTRO — slides 27-32
-// Replace the matching stub functions in Lecture3.jsx with these.
-// Add to the lucide-react import:
-//   Stethoscope, Wrench, MessageSquare, ThumbsDown, Flag, HelpCircle, BookOpen
-// ============================================================
 
 // ---------- 27. NARROWING DOWN ----------
 
@@ -2111,8 +2100,7 @@ function NarrowingAlgorithmSlide() {
 
         <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
           <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Йдіть <strong>по ланцюжку з початку</strong>, а не туди, куди тягне
-            інтуїція. Кожен крок або відсікає половину варіантів, або називає винного.
+            Запит проходить кілька шарів — ім'я, з'єднання, TLS, HTTP. Перевіряйте їх по черзі знизу вгору, а не там, куди тягне інтуїція: кожен крок або відсікає половину варіантів, або називає винного.
           </p>
         </div>
 
@@ -2129,6 +2117,7 @@ function NarrowingAlgorithmSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-3">
+            <div className="numbered-list__number">2</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">Порт приймає з'єднання?</p>
               <p className="fs-body-sm text-muted mt-sm font-mono">nc -zv host 443</p>
@@ -2139,17 +2128,20 @@ function NarrowingAlgorithmSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-3">
+            <div className="numbered-list__number">3</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">Сертифікат приймається?</p>
-              <p className="fs-body-sm text-muted mt-sm font-mono">curl -vI https://host</p>
+              <p className="fs-body-sm text-muted mt-sm font-mono">curl -v -o /dev/null https://host</p>
               <p className="fs-body-sm text-muted">
                 Перевірити з <span className="font-mono">-k</span>: якщо так запрацювало —
-                справа саме в сертифікаті
+                справа саме в сертифікаті, далі{' '}
+  <span className="font-mono">openssl s_client</span>
               </p>
             </div>
           </div>
 
           <div className="numbered-list__item fade-in-delay-4">
+            <div className="numbered-list__number">4</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">Що каже HTTP?</p>
               <p className="fs-body-sm text-muted mt-sm font-mono">curl -v https://host/health</p>
@@ -2160,6 +2152,7 @@ function NarrowingAlgorithmSlide() {
           </div>
 
           <div className="numbered-list__item fade-in-delay-5">
+            <div className="numbered-list__number">5</div>
             <div className="numbered-list__content">
               <p className="numbered-list__text">Хто саме відповів?</p>
               <p className="fs-body-sm text-muted mt-sm">
@@ -2290,7 +2283,7 @@ function ProveItSlide() {
         </div>
 
         <CodeBlock title="Повідомлення, на яке реагують" color="green">
-{`GET https://api.example.com/v1/items → 504, стабільно через 30 с
+          {`GET https://api.example.com/v1/items → 504, стабільно через 30 с
 Відтворюється: curl -v -o /dev/null -w '%{http_code} %{time_total}\\n' ...
 
 - почалося близько 14:20, до того 200 за 120 мс
