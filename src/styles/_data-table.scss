@@ -1,0 +1,75 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// ============================================
+// DATA TABLE
+// ============================================
+// Comparison / reference table on slides (components/DataTable.jsx).
+// Surface colors come from theme custom properties, so it works
+// in both dark and light themes.
+
+.data-table {
+  background: var(--bg-card);
+  border: var(--border-subtle);
+  border-radius: $radius-lg;
+  // Wide tables scroll inside the card instead of stretching the slide
+  overflow-x: auto;
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $fs-body-sm;
+    line-height: $lh-normal;
+    color: var(--text-secondary);
+  }
+
+  th,
+  td {
+    padding: $spacing-md $spacing-base;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: var(--border-subtle);
+  }
+
+  tbody tr:last-child {
+    th,
+    td {
+      border-bottom: none;
+    }
+  }
+
+  // Column headers
+  thead th {
+    font-family: $font-heading;
+    font-weight: $fw-bold;
+    color: var(--text-primary);
+    background: var(--bg-card-dark);
+    white-space: nowrap;
+  }
+
+  // Row labels
+  tbody th {
+    font-family: $font-heading;
+    font-weight: $fw-semibold;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  &__corner {
+    color: var(--text-muted);
+  }
+
+  // English term under a label, same look as card subtitles
+  &__sub {
+    @include text-english;
+    display: block;
+    margin-top: $spacing-2xs;
+    font-family: $font-primary;
+    font-weight: $fw-regular;
+  }
+
+  // Colored value (good / warn / bad)
+  &__tone {
+    font-weight: $fw-semibold;
+  }
+}

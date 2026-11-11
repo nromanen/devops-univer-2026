@@ -1,2547 +1,2131 @@
-import React from 'react';
+import React, { useState } from 'react'
 import LectureLayout from '../components/LectureLayout';
 import SlideHeader from '../components/SlideHeader';
-import { InfoCard } from '../components/Cards';
+import { InfoCard, InfoCardFeatured, BadgeCard } from '../components/Cards';
 import CodeBlock from '../components/CodeBlock';
 import HighlightBox from '../components/HighlightBox';
+import DefBadge from '../components/DefBadge';
 import ExtLink from '../components/ExtLink';
+import SlideLink from '../components/SlideLink';
 import {
-    GitBranch, GitMerge, Target, AlertTriangle,
-    BookOpen, Triangle, Ruler, PieChart, ShieldAlert,
-    Lock, MessageSquare, Users, Timer, Dice5, Tag, Siren, Wrench,
-    HelpCircle, Cpu, Grid3x3, Database, KeyRound, EyeOff, FolderTree,
-    Layers, Play, Server, Clock, Package, Bug, Zap,
-    ArrowRight, CheckCircle2, XCircle,
+  Package, FileCode2, ShieldCheck, ChevronDown, ChevronUp,
+  Target,
+  AlertTriangle,
+  BookOpen,
+  HelpCircle,
+  Laptop,
+  Server,
+  Cpu,
+  Layers,
+  Play,
+  Tag,
+  FileCode,
+  Zap,
+  FolderX,
+  GitMerge,
+  Box,
+  Minimize2,
+  UserX,
+  HeartPulse,
+  Settings,
+  HardDrive,
+  Workflow,
+  ScrollText,
+  Power,
+  ScanSearch,
+  Bug,
+  FileCheck,
+  CheckCircle2,
+  XCircle,
+  Lock,
+  Eye,
+  Gauge,
+  Database,
+  Wrench,
 } from 'lucide-react';
 
-// ============================================
-// SLIDES ARRAY
-// `selfStudy: true` — slide is left to the student.
-// ============================================
-
 const slides = [
-    { id: 1, title: 'Титульний слайд', component: TitleSlide },
-    { id: 2, title: 'Мета лекції', component: ObjectivesSlide },
-    { id: 3, title: 'Навіщо потрібна CI', component: WhyCiSlide },
-    { id: 4, title: 'Що CI ловить, а що ні', component: WhatCiCatchesSlide },
-    { id: '4_1', title: 'CI — це практика, не інструмент', component: TeamPracticeSlide },
-    { id: '4_2', title: 'Інтеграція ≠ злиття pull request', component: IntegrationTargetSlide },
-    { id: 5, title: 'Анатомія конвеєра', component: PipelineAnatomySlide },
-    { id: 6, title: 'Тригери: push, PR, розклад', component: TriggersSlide },
-    { id: 7, title: 'Завдання, кроки, артефакти', component: JobsStepsArtifactsSlide },
-    { id: 8, title: 'Runner: де це виконується', component: RunnersSlide, selfStudy: true },
-    { id: '8_1', title: 'Чим це реалізується', component: CiSystemsSlide, selfStudy: true },
-    { id: 9, title: 'Матрична стратегія', component: MatrixSlide, selfStudy: true },
-    { id: 10, title: 'Кешування залежностей', component: CachingSlide, selfStudy: true },
-    { id: 11, title: 'Фільтри за шляхами', component: PathFiltersSlide, selfStudy: true },
-    { id: 12, title: 'Секрети в конвеєрі', component: SecretsSlide },
-    { id: 13, title: 'Піраміда тестів', component: TestPyramidSlide },
-    { id: 14, title: 'Який рівень тестів де запускати', component: TestPlacementSlide },
-    { id: 15, title: 'Лінтери й форматери', component: LintersSlide },
-    { id: 16, title: 'Покриття коду', component: CoverageSlide },
-    { id: 17, title: 'Аудит залежностей', component: DependencyAuditSlide },
-    { id: 18, title: 'Обов\'язкові перевірки', component: RequiredChecksSlide },
-    { id: 19, title: 'Code review як частина процесу', component: CodeReviewSlide },
-    { id: 20, title: 'CODEOWNERS і захист гілок', component: BranchProtectionSlide },
-    { id: 21, title: 'Швидкість зворотного зв\'язку', component: FeedbackSpeedSlide },
-    { id: 22, title: 'Нестабільні тести', component: FlakyTestsSlide },
-    { id: 23, title: 'Що ламається без ваших змін', component: MovingVersionsSlide },
-    { id: '23_1', title: 'Демонстрація', component: DemoSlide },
-    { id: 24, title: 'Типові помилки', component: CommonMistakesSlide },
-    { id: 25, title: 'Підсумки', component: SummarySlide },
-    { id: 26, title: 'Питання?', component: QuestionsSlide },
+  { id: 1, title: 'Титульний слайд', component: TitleSlide },
+  { id: 2, title: 'Мета лекції', component: ObjectivesSlide },
+  { id: 3, title: 'Проблема «на моїй машині працює»', component: WorksOnMyMachineSlide },
+  { id: 4, title: 'Віртуалізація проти контейнеризації', component: VmVsContainerSlide },
+  { id: 5, title: 'На чому тримаються контейнери', component: NamespacesCgroupsSlide, selfStudy: true },
+  { id: 6, title: 'Образ, шар, контейнер', component: ImageLayerContainerSlide },
+  { id: 7, title: 'Життєвий цикл контейнера', component: ContainerLifecycleSlide },
+  { id: 8, title: 'Реєстр: тег проти дайджесту', component: RegistryTagsSlide },
+  { id: 9, title: 'Dockerfile: основні інструкції', component: DockerfileBasicsSlide },
+  { id: '9_1', title: 'Що ще буває в Dockerfile', component: DockerfileMoreSlide, selfStudy: true },
+  { id: 10, title: 'Порядок інструкцій і кеш збірки', component: BuildCacheSlide },
+  { id: 11, title: 'Контекст збірки і .dockerignore', component: BuildContextSlide },
+  { id: 12, title: 'Багатоетапна збірка', component: MultiStageSlide },
+  { id: '12_1', title: 'Маршрутизація SPA в nginx', component: SpaRoutingSlide, selfStudy: true },
+  { id: 13, title: 'Вибір базового образу', component: BaseImageSlide },
+  { id: 14, title: 'Розмір образу: до і після', component: ImageSizeSlide },
+  { id: 15, title: 'Непривілейований користувач', component: NonRootSlide },
+  { id: 16, title: 'Конфігурація через середовище', component: ConfigEnvSlide },
+  { id: 17, title: 'Дані: том проти шару', component: VolumesSlide },
+  { id: 18, title: 'Один процес на контейнер', component: SingleProcessSlide },
+  { id: 19, title: 'Сигнали й коректна зупинка', component: SignalsSlide },
+  { id: 20, title: 'Журнали у стандартний вивід', component: LoggingSlide },
+  { id: 21, title: 'Перевірка стану контейнера', component: HealthcheckSlide },
+  { id: 22, title: 'Сканування образу', component: ScanningSlide, selfStudy: true },
+  { id: 23, title: 'Типові помилки', component: CommonMistakesSlide },
+  { id: 24, title: 'Зведений Dockerfile', component: FinalDockerfileSlide },
+  { id: 25, title: 'Підсумки', component: SummarySlide },
+  { id: 26, title: 'Питання?', component: QuestionsSlide },
 ];
 
 export default function Lecture4() {
-    return <LectureLayout slides={slides} />;
+  return <LectureLayout slides={slides} />;
 }
+
+// ============================================
+// HELPERS
+// ============================================
+
+// Plain text line inside an outlined card
+function Point({ children }) {
+  return <p className="fs-body text-secondary mb-sm">{children}</p>;
+}
+
+function CollapsibleCodeBlock({ children, title, buttonLabel = "Показати", color = "orange" }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
+    return (
+      <div className="mt-sm">
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="btn btn--secondary"
+        >
+          🔍 {buttonLabel}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-sm">
+      <CodeBlock title={title} color={color}>
+        {children}
+      </CodeBlock>
+      <button
+        type="button"
+        onClick={() => setIsOpen(false)}
+        className="btn btn--link text-muted mt-xs"
+      >
+        ▲ Сховати
+      </button>
+    </div>
+  );
+}
+
+// ============================================
+// SLIDE COMPONENTS
+// ============================================
 
 // ---------- 1. TITLE ----------
 
 function TitleSlide() {
-    return (
-        <div className="slide slide--centered slide--gradient-blue-purple">
-            <div className="title-slide__icon-wrapper">
-                <GitBranch />
-            </div>
-            <h1 className="title-slide__title">
-                Безперервна інтеграція
-            </h1>
-            <h2 className="title-slide__subtitle">
-                Лекція 3 — Основи DevOps
-            </h2>
-            <p className="title-slide__english">
-                Continuous Integration
-            </p>
-            <div className="title-slide__badge">
-                <p>🔁 Кожна зміна перевіряється автоматично</p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="slide slide--centered slide--gradient-blue-purple">
+      <div className="title-slide__icon-wrapper">
+        <Package />
+      </div>
+      <h1 className="title-slide__title">
+        Контейнери й образи
+      </h1>
+      <h2 className="title-slide__subtitle">
+        Лекція 4 — Основи DevOps
+      </h2>
+      <p className="title-slide__english">
+        Containers and Images
+      </p>
+      <div className="title-slide__badge">
+        <p>📦 Один артефакт, однакова поведінка скрізь</p>
+      </div>
+    </div>
+  );
 }
 
 // ---------- 2. OBJECTIVES ----------
 
 function ObjectivesSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader icon={Target} title="Мета лекції" subtitle="Learning Objectives" />
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader icon={Target} title="Мета лекції" subtitle="Learning Objectives" />
 
-                <div className="step-list">
-                    <div className="step-list__item step-list__item--blue fade-in-delay-1">
-                        <div className="step-list__number step-list__number--blue">1</div>
-                        <div className="step-list__content">
-                            <h3 className="step-list__title step-list__title--cyan">
-                                Зрозуміти CI як домовленість команди
-                                <span className="step-list__subtitle"> — Practice Before Tooling</span>
-                            </h3>
-                            <p className="step-list__description">
-                                Короткі гілки, щоденна інтеграція, зламана основна гілка як привід
-                                зупинитися
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="step-list__item step-list__item--purple fade-in-delay-2">
-                        <div className="step-list__number step-list__number--purple">2</div>
-                        <div className="step-list__content">
-                            <h3 className="step-list__title step-list__title--purple">
-                                Зрозуміти, що таке конвеєр
-                                <span className="step-list__subtitle"> — Pipeline Anatomy</span>
-                            </h3>
-                            <p className="step-list__description">
-                                Тригери, завдання, кроки, артефакти — модель, однакова в усіх системах CI
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="step-list__item step-list__item--green fade-in-delay-3">
-                        <div className="step-list__number step-list__number--green">3</div>
-                        <div className="step-list__content">
-                            <h3 className="step-list__title step-list__title--green">
-                                Розібратися, що саме перевіряти
-                                <span className="step-list__subtitle"> — Tests, Linters, Audit</span>
-                            </h3>
-                            <p className="step-list__description">
-                                Рівні тестів, покриття, перевірка залежностей на вразливості
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="step-list__item step-list__item--orange fade-in-delay-4">
-                        <div className="step-list__number step-list__number--orange">4</div>
-                        <div className="step-list__content">
-                            <h3 className="step-list__title step-list__title--orange">
-                                Зробити перевірки обов'язковими
-                                <span className="step-list__subtitle"> — Required Checks</span>
-                            </h3>
-                            <p className="step-list__description">
-                                Конвеєр, який блокує злиття, а не просто малює червоний хрестик
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <BadgeCard
+            letter="1"
+            title="Зрозуміти, що таке контейнер"
+            subtitle="What a container really is"
+            description="Не маленька віртуальна машина, а звичайний процес хоста з обмеженнями. Звідси і переваги, і межі ізоляції"
+            color="blue"
+            delay={1}
+          />
+          <BadgeCard
+            letter="2"
+            title="Зібрати хороший образ"
+            subtitle="Build a good image"
+            description="Такий, що швидко перезбирається, мало важить і не тягне всередину зайвого: секретів, .git, node_modules"
+            color="purple"
+            delay={2}
+          />
+          <BadgeCard
+            letter="3"
+            title="Запускати коректно"
+            subtitle="Run it properly"
+            description="Не від root, конфігурація ззовні, журнали в stdout, дані в томі, коректна зупинка за сигналом"
+            color="green"
+            delay={3}
+          />
+          <BadgeCard
+            letter="4"
+            title="Перевірити результат"
+            subtitle="Verify the result"
+            description="Розмір, шари, стан контейнера, вразливості й типові помилки, на яких спотикаються всі"
+            color="orange"
+            delay={4}
+          />
         </div>
-    );
+
+        <HighlightBox color="blue" icon={Package}>
+          Наскрізний приклад лекції — <strong>wishlist-api</strong> (FastAPI) і{' '}
+          <strong>wishlist-ui</strong> (Vue + Vite). Ті два образи, що збиратимете
+          в лабораторній роботі.
+
+          <div>
+
+          <ExtLink href="https://www.youtube.com/watch?v=3c-iBn73dDE&t=10s" color="blue">
+            Docker Tutorial for Beginners
+          </ExtLink>
+          </div>
+
+          <ExtLink href="https://www.youtube.com/watch?v=pg19Z8LL06w&t=5s" color="green">
+            Docker Crash Course for Absolute Beginners
+          </ExtLink>
+
+        </HighlightBox>
+      </div>
+    </div>
+  );
 }
 
-// ---------- 3. WHY CI ----------
+// ---------- 3. WORKS ON MY MACHINE ----------
 
-function WhyCiSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Zap}
-                    title="Навіщо потрібна CI"
-                    subtitle="Integrate Often, Break Less"
-                />
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--red fade-in-delay-1">
-                        <div className="flex items-center gap-sm mb-base">
-                            <XCircle className="icon-lg text-red" />
-                            <h3 className="font-heading fs-section font-bold text-red">
-                                Без CI
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Гілка живе два тижні</p>
-                            <p className="fs-body text-secondary">Тести запускає той, хто пам'ятає</p>
-                            <p className="fs-body text-secondary">«У мене працює» — і це правда</p>
-                            <p className="fs-body text-secondary">Злиття перетворюється на подію</p>
-                        </div>
-                        <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-                            Помилку знаходять через тижні після того, як її внесли
-                        </p>
-                    </div>
-
-                    <div className="outlined-card outlined-card--green fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <CheckCircle2 className="icon-lg text-green" />
-                            <h3 className="font-heading fs-section font-bold text-green">
-                                З CI
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Кожна зміна перевіряється одразу</p>
-                            <p className="fs-body text-secondary">Перевірка однакова для всіх</p>
-                            <p className="fs-body text-secondary">Середовище чисте щоразу</p>
-                            <p className="fs-body text-secondary">Злиття — рутина, а не подія</p>
-                        </div>
-                        <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-                            Помилку видно через хвилини, поки контекст ще в голові
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--gradient-green-blue mb-base fade-in-delay-3">
-                    <p className="fs-lg text-primary text-center" style={{ margin: 0 }}>
-                        Головна цінність не в автоматизації, а в{' '}
-                        <strong>швидкості зворотного зв'язку</strong>
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col">
-                    <div className="definition definition--cyan fade-in-delay-4">
-                        <p className="definition__term definition__term--cyan">Continuous Integration</p>
-                        <p className="definition__description">
-                            Дослівно — «безперервне вливання»: кожен вливає свої зміни в спільну
-                            гілку часто, а не накопичує тижнями. Автоматичні перевірки роблять це
-                            безпечним
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-5">
-                        <p className="definition__term definition__term--orange">Ціна затримки</p>
-                        <p className="definition__description">
-                            Помилка, знайдена через хвилину, коштує хвилин. Та сама помилка на
-                            продакшені — годин роботи кількох людей і довіри користувачів
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 4. WHAT CI CATCHES ----------
-
-function WhatCiCatchesSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Bug}
-                    title="Що CI ловить, а що ні"
-                    subtitle="Realistic Expectations"
-                />
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--green fade-in-delay-1">
-                        <div className="flex items-center gap-sm mb-base">
-                            <CheckCircle2 className="icon-lg text-green" />
-                            <h3 className="font-heading fs-section font-bold text-green">
-                                Ловить
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Код не збирається</p>
-                            <p className="fs-body text-secondary">Тести не проходять</p>
-                            <p className="fs-body text-secondary">Забутий файл, який є лише локально</p>
-                            <p className="fs-body text-secondary">Залежність із відомою вразливістю</p>
-                            <p className="fs-body text-secondary">Порушення стилю й очевидні дефекти</p>
-                            <p className="fs-body text-secondary">Конфлікт зі змінами колеги</p>
-                        </div>
-                    </div>
-
-                    <div className="outlined-card outlined-card--orange fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <XCircle className="icon-lg text-orange" />
-                            <h3 className="font-heading fs-section font-bold text-orange">
-                                Не ловить
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Неправильно зрозумілу вимогу</p>
-                            <p className="fs-body text-secondary">Погану архітектуру</p>
-                            <p className="fs-body text-secondary">Те, на що немає тесту</p>
-                            <p className="fs-body text-secondary">Проблеми під навантаженням</p>
-                            <p className="fs-body text-secondary">Помилки конфігурації середовища</p>
-                            <p className="fs-body text-secondary">Незручний інтерфейс</p>
-                        </div>
-                    </div>
-                </div>
-
-                <HighlightBox color="orange" icon={AlertTriangle}>
-                    Зелений конвеєр означає рівно одне: <strong>перевірки, які ви написали,
-                        пройшли</strong>. Не «код правильний» і не «можна випускати». Якість
-                    конвеєра дорівнює якості перевірок у ньому.
-                </HighlightBox>
-
-                <div className="highlight-box highlight-box--blue mt-base">
-                    <p className="highlight-box__text fs-body-sm">
-                        Звідси практичний висновок: коли на продакшені знайшли помилку, першим
-                        питанням має бути не «хто винен», а <strong>«яка перевірка мала її
-                            спіймати і чому її немає»</strong>. Кожен інцидент — привід дописати тест.
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 4_1. CI AS A TEAM PRACTICE ----------
-
-function TeamPracticeSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Users}
-                    title="CI — це практика, не інструмент"
-                    subtitle="What the Team Does, What the Machine Does"
-                />
-
-                <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Конвеєр не робить CI. CI робить <strong>домовленість команди</strong>:
-                        вливати зміни в спільну гілку щодня. Конвеєр лише робить цю домовленість
-                        дешевою й безпечною.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--red fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <GitBranch className="icon-lg text-red" />
-                            <h3 className="font-heading fs-section font-bold text-red">
-                                Гілка на два тижні
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Конфлікти ростуть швидше, ніж сама гілка</p>
-                            <p className="fs-body text-secondary">Рецензія на 60 файлів не буває уважною</p>
-                            <p className="fs-body text-secondary">Відкотити зміну = відкотити все одразу</p>
-                            <p className="fs-body text-secondary">Автор уже не пам'ятає, навіщо той рядок</p>
-                        </div>
-                    </div>
-
-                    <div className="outlined-card outlined-card--green fade-in-delay-3">
-                        <div className="flex items-center gap-sm mb-base">
-                            <GitMerge className="icon-lg text-green" />
-                            <h3 className="font-heading fs-section font-bold text-green">
-                                Гілка на день
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Конфлікт — на кілька рядків, не на модуль</p>
-                            <p className="fs-body text-secondary">Рецензія на 200 рядків справді читається</p>
-                            <p className="fs-body text-secondary">Відкотити можна точково</p>
-                            <p className="fs-body text-secondary">Контекст ще в голові в усіх учасників</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--purple mb-base fade-in-delay-4">
-                    <h3 className="font-heading fs-card-title font-bold text-purple mb-sm">
-                        Як вливати незавершене
-                    </h3>
-                    <p className="fs-body text-secondary mb-base">
-                        Очевидне заперечення: «моя задача на тиждень, що мені вливати щодня?»
-                        Відповідь — <strong>завершений шматок, а не завершену фічу</strong>.
-                        Зламаний код не вливають ніколи; код, який ще не робить усього
-                        задуманого, — вливають постійно.
-                    </p>
-                    <div className="flex flex-col gap-sm">
-                        <p className="fs-body text-secondary">
-                            <strong className="text-purple">Нарізати задачу.</strong> Імпорт із файлу —
-                            це парсер, валідація, збереження, кнопка. Кожен шматок робочий і
-                            перевірений сам по собі, хоч імпорту як функції ще немає
-                        </p>
-                        <p className="fs-body text-secondary">
-                            <strong className="text-purple">Влити код, який ще ніхто не викликає.</strong>{' '}
-                            Новий модуль лежить у спільній гілці, покритий тестами, і просто не
-                            підключений. Нічого зламати не може
-                        </p>
-                    </div>
-                    <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-                        Якщо ж готовий код треба вмикати на льоту або лише частині користувачів —
-                        для цього є прапорці функціональності. Але це вже про постачання, а не
-                        про інтеграцію, тож повернемось до них у відповідній лекції
-                    </p>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-base fade-in-delay-5">
-                    <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-                        Зламана основна гілка
-                    </h3>
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        Зупиняє не автора, а всю команду: кожен наступний бачить червоне й не
-                        розуміє, чи це він. Тому лагодять негайно, а не «після обіду» — і це теж
-                        домовленість, яку жоден інструмент не встановить за вас.
-                    </p>
-                </div>
-
-                <HighlightBox color="orange" icon={AlertTriangle}>
-                    Звідси висновок: можна мати бездоганний конвеєр із
-                    матрицею, кешем і обов'язковими перевірками — і{' '}
-                    <strong>не мати CI</strong>, якщо гілки живуть тижнями. Інструмент без
-                    практики не працює; практика без інструмента працює гірше, але працює.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-
-// ---------- 4_2. INTEGRATION IS NOT A MERGE ----------
-
-function IntegrationTargetSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={GitMerge}
-                    title="Інтеграція ≠ злиття pull request"
-                    subtitle="You Integrate Against a Moving Target"
-                />
-
-                <p className="fs-body text-secondary mb-base fade-in-delay-1">
-                    Поки ви працюєте у своїй гілці, основна не стоїть на місці. Питання не в
-                    тому, чи працює ваш код, а в тому, чи працює він{' '}
-                    <strong>разом із тим, що з'явилося за цей час</strong>.
-                </p>
-
-                <div className="flow-diagram mb-xl fade-in-delay-2">
-                    <div className="icon-box icon-box--blue">
-                        <GitBranch className="icon-box__icon icon-box__icon--blue" />
-                        <p className="icon-box__title">Ваша гілка</p>
-                        <p className="icon-box__subtitle">зелена</p>
-                    </div>
-
-                    <ArrowRight className="arrow" />
-
-                    <div className="icon-box icon-box--purple">
-                        <GitBranch className="icon-box__icon icon-box__icon--purple" />
-                        <p className="icon-box__title">Гілка колеги</p>
-                        <p className="icon-box__subtitle">теж зелена</p>
-                    </div>
-
-                    <ArrowRight className="arrow" />
-
-                    <div className="icon-box icon-box--red">
-                        <Siren className="icon-box__icon" />
-                        <p className="icon-box__title">Разом у main</p>
-                        <p className="icon-box__subtitle">зламано</p>
-                    </div>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="definition definition--orange fade-in-delay-3">
-                        <p className="definition__term definition__term--orange">Текстовий конфлікт</p>
-                        <p className="definition__description">
-                            Двоє правили ті самі рядки. Система помічає це сама й не дасть злити,
-                            доки не розв'яжете
-                        </p>
-                    </div>
-                    <div className="definition definition--red fade-in-delay-3">
-                        <p className="definition__term definition__term--red">Смисловий конфлікт</p>
-                        <p className="definition__description">
-                            Один перейменував функцію, другий у своїй гілці додав її виклик зі старою
-                            назвою. Різні файли, жодного конфлікту для Git — і зламана збірка
-                            після злиття
-                        </p>
-                    </div>
-                </div>
-
-                <div className="numbered-list mb-base">
-                    <div className="numbered-list__item fade-in-delay-4">
-                        <div className="numbered-list__number">1</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">
-                                Конвеєр на pull request перевіряє результат злиття, а не вашу гілку
-                            </p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Саме тому перевірка на push у гілку й перевірка на pull request дають
-                                різні відповіді
-                            </p>
-                        </div>
-                    </div>
-                    <div className="numbered-list__item fade-in-delay-5">
-                        <div className="numbered-list__number">2</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">
-                                Але перевірено було злиття з <strong>тим</strong> станом основної гілки
-                            </p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Поки йшла рецензія, туди встигли влити ще дві зміни — і результат уже
-                                інший
-                            </p>
-                        </div>
-                    </div>
-                    <div className="numbered-list__item fade-in-delay-5">
-                        <div className="numbered-list__number">3</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">
-                                Звідси вимога актуальності гілки перед злиттям
-                            </p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Правило із захисту гілок, яке побачимо далі: щоб злити, у вашу гілку
-                                має бути влитий поточний стан основної. Ціна — після кожного такого
-                                підтягування конвеєр стартує заново, а основна за ці кілька хвилин
-                                може зсунутися ще раз. Там, де вливають десятки разів на день, це
-                                знімають чергою злиття: платформа сама по черзі зливає кожен pull
-                                request з актуальною основною, проганяє перевірки й вливає, якщо зелено
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Зелений конвеєр на вашому pull request означає, що зеленим був результат
-                    злиття <strong>на той момент</strong>. Git уміє спіймати конфлікт у тих
-                    самих рядках, але не вміє спіймати конфлікт у змісті — для цього й потрібен
-                    прогін перевірок на результаті злиття, а не на вашій гілці.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-
-// ---------- 5. PIPELINE ANATOMY ----------
-
-function PipelineAnatomySlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={GitBranch}
-                    title="Анатомія конвеєра"
-                    subtitle="Trigger, Job, Step, Artifact"
-                />
-
-                <div className="flow-diagram mb-xl fade-in-delay-1">
-                    <div className="icon-box icon-box--blue">
-                        <Zap className="icon-box__icon icon-box__icon--blue" />
-                        <p className="icon-box__title">Подія</p>
-                        <p className="icon-box__subtitle">push, PR, розклад</p>
-                    </div>
-
-                    <ArrowRight className="arrow" />
-
-                    <div className="icon-box icon-box--purple">
-                        <Server className="icon-box__icon icon-box__icon--purple" />
-                        <p className="icon-box__title">Завдання</p>
-                        <p className="icon-box__subtitle">чиста машина</p>
-                    </div>
-
-                    <ArrowRight className="arrow" />
-
-                    <div className="icon-box icon-box--green">
-                        <Play className="icon-box__icon icon-box__icon--green" />
-                        <p className="icon-box__title">Кроки</p>
-                        <p className="icon-box__subtitle">по черзі, згори вниз</p>
-                    </div>
-
-                    <ArrowRight className="arrow" />
-
-                    <div className="icon-box icon-box--orange">
-                        <Package className="icon-box__icon" />
-                        <p className="icon-box__title">Артефакт</p>
-                        <p className="icon-box__subtitle">що лишилося після</p>
-                    </div>
-                </div>
-
-                <h3 className="font-heading fs-card-title font-bold text-primary mb-base fade-in-delay-2">
-                    Як це називається
-                </h3>
-
-                <div className="slide-grid slide-grid--2col mb-base">
-                    <CodeBlock title="GitHub Actions — workflow → job → step" color="blue">
-                        {`# увесь файл — це workflow
-name: CI
-on: [pull_request]
-
-jobs:
-  test:                        # job — своя машина
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5   # step
-      - run: npm ci                 # step
-      - run: npm test               # step
-
-  lint:                        # ще один job — паралельно
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5
-      - run: npm run lint`}
-                    </CodeBlock>
-
-                    <CodeBlock title="GitLab CI — pipeline → stage → job" color="orange">
-                        {`# увесь прогін файлу — це pipeline
-stages: [check]                # оголошення stage
-
-test:                          # job — своя машина
-  stage: check
-  image: node:24
-  script:                      # просто список команд
-    - npm ci
-    - npm test
-
-lint:                          # ще один job у тому ж stage
-  stage: check
-  image: node:24
-  script:
-    - npm run lint`}
-                    </CodeBlock>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="definition definition--blue fade-in-delay-3">
-                        <p className="definition__term definition__term--blue">Що тут видно</p>
-                        <p className="definition__description">
-                            Два job в обох системах — вони не залежать одне від одного й тому
-                            запускаються паралельно, на різних машинах. Якщо вільних виконавців
-                            бракує, другий просто зачекає своєї черги. У Actions кожен
-                            <span className="font-mono"> step</span> має власну назву й статус, тож
-                            у журналі видно, який саме впав
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-3">
-                        <p className="definition__term definition__term--orange">
-                            Чому ланцюжок GitLab коротший
-                        </p>
-                        <p className="definition__description">
-                            <span className="font-mono">script</span> — не окрема сутність, а ключ
-                            зі списком рядків. Окремих кроків зі статусами там немає. Натомість є
-                            <span className="font-mono"> stage</span>, якого немає в Actions:
-                            порядок там задають залежностями між job
-                        </p>
-                    </div>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-base">
-                    <div className="definition definition--green fade-in-delay-4">
-                        <p className="definition__term definition__term--green">Машина чиста щоразу</p>
-                        <p className="definition__description">
-                            Нічого не лишається від попереднього запуску. Це і є гарантія
-                            відтворюваності — і причина, чому потрібен кеш
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-4">
-                        <p className="definition__term definition__term--orange">Завдання ізольовані</p>
-                        <p className="definition__description">
-                            Два job вище не бачать файлів одне одного, тому кожен окремо отримує
-                            код. Передати щось між ними можна лише через артефакти
-                        </p>
-                    </div>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Остання пара пояснює найчастіше здивування новачка: «я ж зібрав проєкт у
-                    попередньому завданні, чому наступне його не бачить». Тому що це{' '}
-                    <strong>інша машина</strong>.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 6. TRIGGERS ----------
-
-function TriggersSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Play}
-                    title="Тригери"
-                    subtitle="What Starts the Pipeline"
-                />
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <InfoCard
-                        icon={GitBranch}
-                        title="Push у гілку"
-                        subtitle="Найчастіший"
-                        description="Кожна відправка змін запускає перевірку. Для основної гілки зазвичай ще й розгортання"
-                        color="blue"
-                        delay={1}
-                    />
-                    <InfoCard
-                        icon={CheckCircle2}
-                        title="Pull request"
-                        subtitle="Головний для командної роботи"
-                        description="Перевіряє результат злиття, а не саму гілку. Саме ці перевірки роблять обов'язковими"
-                        color="purple"
-                        delay={2}
-                    />
-                    <InfoCard
-                        icon={Clock}
-                        title="За розкладом"
-                        subtitle="Періодично"
-                        description="Нічні прогони довгих тестів, перевірка залежностей на нові вразливості"
-                        color="green"
-                        delay={3}
-                    />
-                    <InfoCard
-                        icon={Zap}
-                        title="Вручну"
-                        subtitle="За кнопкою"
-                        description="Розгортання, разові операції обслуговування. Часто з підтвердженням від відповідальної людини"
-                        color="orange"
-                        delay={4}
-                    />
-                </div>
-
-                <div className="outlined-card outlined-card--blue mb-base fade-in-delay-5">
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-blue">Тригер за міткою версії</strong> — окремий
-                        випадок push, який зазвичай запускає випуск: збірку релізного артефакта й
-                        розгортання в робоче середовище. Так відділяють «перевірили» від «випустили».
-                    </p>
-                </div>
-
-                <HighlightBox color="orange" icon={AlertTriangle}>
-                    Найдорожча помилка з тригерами — запускати все на кожну подію. Повний прогон
-                    на кожен коміт у чернетку витрачає час людей і хвилини виконавців. Тригери
-                    обмежують гілками, шляхами й типами подій.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 7. JOBS, STEPS, ARTIFACTS ----------
-
-function JobsStepsArtifactsSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Package}
-                    title="Завдання, кроки, артефакти"
-                    subtitle="Same Pipeline, Two Syntaxes"
-                />
-
-                <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary text-center" style={{ margin: 0 }}>
-                        Один і той самий конвеєр у двох системах. Слова різні —{' '}
-                        <strong>структура однакова</strong>
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-base">
-                    <CodeBlock title="GitHub Actions" color="blue">
-                        {`on:
-  pull_request:
- 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: npm ci
-      - run: npm test`}
-                    </CodeBlock>
-
-                    <CodeBlock title="GitLab CI" color="orange">
-                        {`test:
-  stage: test          # *
-  image: node:24
-  script:
-    - npm ci
-    - npm test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"`}
-                    </CodeBlock>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-xl fade-in-delay-2">
-                    <p className="fs-body-sm text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-orange">*</strong> Блоку{' '}
-                        <span className="font-mono">stages</span> тут немає, бо п'ять етапів
-                        існують у GitLab за замовчуванням і саме в такому порядку:{' '}
-                        <span className="font-mono">.pre → build → test → deploy → .post</span>.
-                        Job без <span className="font-mono">stage</span> потрапляє в{' '}
-                        <span className="font-mono">test</span>. Варто назвати етап інакше —
-                        скажімо <span className="font-mono">check</span> — і його вже доведеться
-                        оголосити, інакше пайплайн не пройде валідацію. На практиці{' '}
-                        <span className="font-mono">stages</span> пишуть завжди: це єдине місце,
-                        де видно порядок виконання.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="definition definition--blue fade-in-delay-3">
-                        <p className="definition__term definition__term--blue">Що спільного</p>
-                        <p className="definition__description">
-                            Подія-тригер, іменоване завдання, середовище виконання, послідовність
-                            команд. Ці чотири речі є в кожній системі CI без винятку
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-3">
-                        <p className="definition__term definition__term--orange">Що відрізняється</p>
-                        <p className="definition__description">
-                            Де оголошується тригер і як називається середовище. Отримання коду в
-                            GitLab неявне, в Actions — окремий крок <code>actions/checkout</code>. У Actions крок буває двох форм: власна команда (<code>run</code>) або готовий чужий крок із явною версією (<code>uses</code>); у GitLab другої форми немає, там повторне використання йде через включення файлів
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-xl fade-in-delay-4">
-                    <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-                        Артефакти — те, що переживає завдання
-                    </h3>
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        Це зібраний застосунок, звіт про покриття, результати тестів, журнали
-                        невдалого прогону. Зберігаються поза машиною-виконавцем, доступні для
-                        завантаження й для наступних завдань. Мають строк зберігання. Поняття
-                        однакове в обох системах, відрізняється лише спосіб оголошення.
-                    </p>
-                    <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-                        Порада, яка економить години: зберігайте артефакти невдалих прогонів —
-                        журнали, скріншоти, дампи. Інакше доведеться відтворювати збій наосліп,
-                        а він може й не повторитися
-                    </p>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Далі п'ять слайдів ви опрацьовуєте самостійно: де конвеєр виконується, чим
-                    його реалізують і три способи тримати його швидким — матриця, кеш, фільтри.
-                    Ми ж переходимо до того, <strong>чого не можна класти в репозиторій</strong>.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-
-// ---------- 8. RUNNERS (self-study) ----------
-
-function RunnersSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Cpu}
-                    title="Де це виконується"
-                    subtitle="Runners"
-                />
-
-                <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Кожне завдання отримує <strong>чисту віртуальну машину</strong>, живе
-                        кілька хвилин і зникає разом з усім, що на ній лишилося.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--green fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <CheckCircle2 className="icon-lg text-green" />
-                            <h3 className="font-heading fs-section font-bold text-green">
-                                Виконавці платформи
-                            </h3>
-                        </div>
-                        <p className="fs-body text-secondary mb-base">
-                            Надає сама система CI. Нічого не треба обслуговувати.
-                        </p>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Готові образи з типовим набором ПЗ</p>
-                            <p className="fs-body text-secondary">Безкоштовно для публічних репозиторіїв</p>
-                            <p className="fs-body text-secondary">Обмежені за пам'яттю й процесором</p>
-                        </div>
-                    </div>
-
-                    <div className="outlined-card outlined-card--purple fade-in-delay-3">
-                        <div className="flex items-center gap-sm mb-base">
-                            <Server className="icon-lg text-purple" />
-                            <h3 className="font-heading fs-section font-bold text-purple">
-                                Власні виконавці
-                            </h3>
-                        </div>
-                        <p className="fs-body text-secondary mb-base">
-                            Ваші машини, підключені до системи CI.
-                        </p>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Доступ до внутрішньої мережі</p>
-                            <p className="fs-body text-secondary">Потужніше залізо, свій набір ПЗ</p>
-                            <p className="fs-body text-secondary">Обслуговування й безпека — на вас</p>
-                        </div>
-                    </div>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Хвилини виконавців — ресурс, який рахують. Для публічних репозиторіїв вони
-                    безкоштовні, для приватних входять у квоту плану. Тому повільний конвеєр коштує не лише часу людей, а й грошей — і тим більше, чим більший проєкт.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 8_1. CI SYSTEMS (self-study) ----------
-
-function CiSystemsSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Wrench}
-                    title="Чим це реалізується"
-                    subtitle="Same Model, Different Products"
-                />
-
-                <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Систем CI багато, і всі вони роблять те саме: беруть вашу конфігурацію, виділяють машину, виконують кроки. 
-                        Відрізняються вони не моделлю, а тим, <strong>хто за них відповідає</strong>.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="definition definition--blue fade-in-delay-2">
-                        <p className="definition__term definition__term--blue">GitHub Actions</p>
-                        <p className="definition__description">
-                            Конфігурація в репозиторії, поруч із кодом. Виконавців дає платформа,
-                            піднімати нічого не треба. Безкоштовно для публічних репозиторіїв,
-                            для приватних — квота хвилин
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-2">
-                        <p className="definition__term definition__term--orange">GitLab CI</p>
-                        <p className="definition__description">
-                            Та сама ідея, один файл у корені репозиторію. Зустрічається скрізь, де
-                            вся розробка живе в GitLab — а це чимало компаній, які свідомо тримають
-                            усе в себе
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--purple mb-xl fade-in-delay-3">
-                    <h3 className="font-heading fs-card-title font-bold text-purple mb-sm">
-                        Jenkins
-                    </h3>
-                    <p className="fs-body text-secondary mb-base">
-                        Старший за решту й влаштований інакше: це не сервіс, а{' '}
-                        <strong>програма на вашому сервері зі своїм станом</strong> — плагінами,
-                        версіями, підключеними агентами, налаштуваннями в інтерфейсі.
-                    </p>
-                    <div className="flex flex-col gap-sm">
-                        <p className="fs-body text-secondary">Може майже все — через плагіни, яких тисячі</p>
-                        <p className="fs-body text-secondary">Плагіни треба оновлювати, і оновлення ламають одне одного</p>
-                        <p className="fs-body text-secondary">Налаштування, зроблене мишкою, ніде не записане</p>
-                        <p className="fs-body text-secondary">Впав у п'ятницю — підіймаєте ви, а не підтримка платформи</p>
-                    </div>
-                    <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-                        Попри це — досі всюди у великих компаніях, бо переносити сотні пайплайнів
-                        нікому не хочеться. Шанс зустріти його на першій роботі цілком реальний
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-base">
-                    <div className="definition definition--green fade-in-delay-4">
-                        <p className="definition__term definition__term--green">Решта</p>
-                        <p className="definition__description">
-                            CircleCI, Buildkite, TeamCity, Drone, Woodpecker. Відрізняються моделлю
-                            виконавців, ціною та інтеграціями — не поняттями
-                        </p>
-                    </div>
-                    <div className="definition definition--cyan fade-in-delay-4">
-                        <p className="definition__term definition__term--cyan">Чому в курсі Actions</p>
-                        <p className="definition__description">
-                            Безкоштовно для публічних репозиторіїв, конфігурація поруч із кодом,
-                            нічого не треба розгортати заздалегідь. Найкоротший шлях від «немає
-                            нічого» до «конвеєр працює»
-                        </p>
-                    </div>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Головне питання при виборі — не синтаксис, а <strong>хто обслуговує</strong>.
-                    Хмарна система: чужі виконавці, чужі оновлення, ви платите за хвилини.
-                    Власний сервер: повний контроль і повна відповідальність, включно з
-                    інцидентами о третій ночі.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 9. MATRIX (self-study) ----------
-
-function MatrixSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Grid3x3}
-                    title="Матрична стратегія"
-                    subtitle="One Definition, Many Runs"
-                />
-
-                <p className="fs-body text-secondary mb-base fade-in-delay-1">
-                    Коли одне й те саме треба зробити для кількох сервісів, версій або
-                    операційних систем — не копіюйте завдання. Опишіть його один раз і
-                    перелічіть варіанти.
-                </p>
-
-                <CodeBlock title="Два сервіси одним описом" color="purple">
-                    {`jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        service: [api, notifier]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: make test
-        working-directory: ./\${{ matrix.service }}`}
-                </CodeBlock>
-
-                <div className="slide-grid slide-grid--2col mt-xl mb-base">
-                    <div className="definition definition--green fade-in-delay-2">
-                        <p className="definition__term definition__term--green">Що дає</p>
-                        <p className="definition__description">
-                            Один опис замість двох копій. Додати третій сервіс — це один рядок,
-                            а не ще двадцять. Усі варіанти виконуються паралельно
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-3">
-                        <p className="definition__term definition__term--orange">fail-fast</p>
-                        <p className="definition__description">
-                            За замовчуванням увімкнено: перший невдалий варіант зупиняє решту.
-                            Для перевірки коду зазвичай вимикають — краще побачити всі помилки одразу
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--red mb-base fade-in-delay-4">
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-red">Комбінаторний вибух:</strong> три версії мови
-                        × три операційні системи × два сервіси — це вісімнадцять запусків на кожен
-                        коміт. Матриця множить, а не додає. Перелічуйте лише те, що справді
-                        потрібно перевіряти.
-                    </p>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Матриця корисна лише тоді, коли варіанти <strong>справді однакові</strong>.
-                    Якщо для одного сервісу потрібні інші кроки — це вже не матриця, а два різні
-                    завдання, і не варто натягувати одне на друге умовами.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 10. CACHING (self-study) ----------
-
-function CachingSlide() {
+function WorksOnMyMachineSlide() {
   return (
     <div className="slide">
       <div className="slide__content">
         <SlideHeader
-          icon={Database}
-          title="Кешування залежностей"
-          subtitle="The Cheapest Speedup"
+          icon={Laptop}
+          title="Проблема «на моїй машині працює»"
+          subtitle="It Works on My Machine"
         />
- 
-        <div className="outlined-card outlined-card--gradient-green-blue mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Машина чиста щоразу — отже, залежності завантажуються з нуля на кожен
-            запуск. Для середнього проєкту це <strong>більша частина часу конвеєра</strong>,
-            і саме її прибирають першою.
-          </p>
-        </div>
- 
-        <div className="numbered-list mb-xl">
-          <div className="numbered-list__item fade-in-delay-2">
-            <div className="numbered-list__number">1</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">Ключ будується з файлу блокування версій</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Хеш від <span className="font-mono">package-lock.json</span> чи його
-                аналога. Залежності не змінилися — ключ той самий — кеш підходить
-              </p>
-            </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="outlined-card outlined-card--red fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">Що відрізняється між машинами</h3>
+            <Point>Версія мови: у вас Python 3.12, на сервері 3.10</Point>
+            <Point>Системні бібліотеки: <code>libpq</code>, OpenSSL, локаль</Point>
+            <Point>Операційна система: macOS, Windows, різні дистрибутиви Linux</Point>
+            <Point>Глобально встановлені пакети, яких немає в <code>requirements.txt</code></Point>
+            <Point>Змінні середовища, про які ніхто не пам'ятає</Point>
           </div>
-          <div className="numbered-list__item fade-in-delay-3">
-            <div className="numbered-list__number">2</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">Змінився файл блокування — змінився ключ</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Кеш не знайдено, залежності ставляться заново, і зберігається новий
-                кеш. Далі знову швидко
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-4">
-            <div className="numbered-list__number">3</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">Кешують сховище пакетів, а не папку залежностей</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                <span className="font-mono">~/.npm</span> чи{' '}
-                <span className="font-mono">~/.cache/pip</span>, а не{' '}
-                <span className="font-mono">node_modules</span> чи{' '}
-                <span className="font-mono">venv</span>. Так надійніше: встановлення
-                все одно виконується, але без завантаження з мережі
-              </p>
-            </div>
+
+          <div className="outlined-card outlined-card--green fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Що дає контейнер</h3>
+            <Point>Застосунок, залежності й системні бібліотеки — в одному артефакті</Point>
+            <Point>Той самий образ запускається на ноутбуці, в CI і в продакшені</Point>
+            <Point>Нове середовище піднімається однією командою, а не інструкцією на дві сторінки</Point>
+            <Point>Збірка описана кодом і лежить у репозиторії поруч із застосунком</Point>
           </div>
         </div>
- 
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          Контейнер не прибирає <strong>всіх</strong> відмінностей. Адреса бази даних, ключі
+          й режим роботи різні для кожного середовища — все це виносимо за межі
+          образу.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 4. VM VS CONTAINER ----------
+
+function VmVsContainerSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Server}
+          title="Віртуалізація проти контейнеризації"
+          subtitle="Virtual Machines vs Containers"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="outlined-card outlined-card--purple fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">Віртуальна машина</h3>
+
+            <div className="flex gap-sm mb-sm">
+              <div className="flex flex-col gap-sm" style={{ flex: 1 }}>
+                <span className="badge badge--solid-purple">Застосунок</span>
+                <span className="badge badge--solid-purple">Бібліотеки</span>
+                <span className="badge badge--solid-purple">Гостьова ОС</span>
+                <p className="fs-body-sm text-muted" style={{ margin: 0, textAlign: 'center' }}>ВМ A</p>
+              </div>
+              <div className="flex flex-col gap-sm" style={{ flex: 1 }}>
+                <span className="badge badge--solid-purple">Застосунок</span>
+                <span className="badge badge--solid-purple">Бібліотеки</span>
+                <span className="badge badge--solid-purple">Гостьова ОС</span>
+                <p className="fs-body-sm text-muted" style={{ margin: 0, textAlign: 'center' }}>ВМ B</p>
+              </div>
+            </div>
+
+            <DefBadge term="Гіпервізор" description="KVM, Hyper-V, VirtualBox" color="purple" />
+            <DefBadge term="Залізо" description="сервер або ноутбук" color="purple" />
+          </div>
+
+          <div className="outlined-card outlined-card--blue fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Контейнер</h3>
+
+            <div className="flex gap-sm mb-sm">
+              <div className="flex flex-col gap-sm" style={{ flex: 1 }}>
+                <span className="badge badge--solid-blue">Застосунок</span>
+                <span className="badge badge--solid-blue">Бібліотеки</span>
+                <p className="fs-body-sm text-muted" style={{ margin: 0, textAlign: 'center' }}>Контейнер A</p>
+              </div>
+              <div className="flex flex-col gap-sm" style={{ flex: 1 }}>
+                <span className="badge badge--solid-blue">Застосунок</span>
+                <span className="badge badge--solid-blue">Бібліотеки</span>
+                <p className="fs-body-sm text-muted" style={{ margin: 0, textAlign: 'center' }}>Контейнер B</p>
+              </div>
+              <div className="flex flex-col gap-sm" style={{ flex: 1, justifyContent: 'flex-end' }}>
+                <span className="badge badge--solid-cyan">Engine</span>
+                <p className="fs-body-sm text-muted" style={{ margin: 0, textAlign: 'center' }}>звичайний процес</p>
+              </div>
+            </div>
+
+            <DefBadge term="Ядро хоста" description="одне, спільне для контейнерів і менеджера контейнерів" color="blue" />
+            <DefBadge term="Залізо" description="сервер або ноутбук" color="blue" />
+            <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
+              Менеджер контейнерів (container engine) — сусід контейнерів, а не шар під ними: він просить ядро створити
+              процес з обмеженнями, а далі той працює з ядром напряму
+            </p>
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--3col mb-base">
+          <InfoCard
+            icon={Zap}
+            title="Старт"
+            subtitle="Startup"
+            description="ВМ завантажує ОС хвилину. Контейнер стартує як звичайний процес — за долі секунди"
+            color="green"
+            delay={3}
+          />
+          <InfoCard
+            icon={HardDrive}
+            title="Розмір"
+            subtitle="Footprint"
+            description="Образ ВМ важить гігабайти. Образ контейнера — від десятків до сотень мегабайт"
+            color="purple"
+            delay={4}
+          />
+          <InfoCard
+            icon={Lock}
+            title="Ізоляція"
+            subtitle="Isolation"
+            description="У ВМ окреме ядро, тож вона ізольована сильніше. Контейнери ділять ядро хоста"
+            color="orange"
+            delay={5}
+          />
+        </div>
+
+        <HighlightBox color="blue" icon={Laptop}>
+          Контейнер використовує ядро хоста, тож образ і ядро мають бути однієї родини.
+          Linux-контейнерам потрібне ядро Linux, а в macOS і Windows його немає. Тому
+          Docker Desktop і подібні застосунки (Podman Desktop, Colima) тихо запускають
+          легку Linux-ВМ, а менеджер контейнерів і самі контейнери живуть у ній. Образ, зібраний у ній, — це
+          образ для Linux під архітектуру процесора вашого комп'ютера. Windows-контейнери
+          теж існують, але потребують ядра Windows і запускаються лише на Windows.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 5. NAMESPACES & CGROUPS ----------
+
+function NamespacesCgroupsSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Cpu}
+          title="На чому тримаються контейнери"
+          subtitle="Namespaces and cgroups"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <InfoCardFeatured
+            icon={Eye}
+            title="Простори імен"
+            subtitle="Namespaces — що процес бачить"
+            description="Ядро показує процесу власну картину світу: свої процеси, мережу, файлову систему й ім'я хоста"
+            color="blue"
+            delay={1}
+          >
+            <div className="mt-xl">
+              <DefBadge term="pid" description="власна нумерація процесів: головний процес контейнера — PID 1" color="blue" />
+              <DefBadge term="net" description="власні інтерфейси, IP і порти" color="blue" />
+              <DefBadge term="mnt" description="власна коренева файлова система" color="blue" />
+              <DefBadge term="uts" description="власне ім'я хоста" color="blue" />
+              <DefBadge term="user" description="відображення UID контейнера на UID хоста" color="blue" />
+            </div>
+          </InfoCardFeatured>
+
+          <InfoCardFeatured
+            icon={Gauge}
+            title="Контрольні групи"
+            subtitle="cgroups — скільки процес може взяти"
+            description="Ядро обмежує ресурси: пам'ять, процесор, кількість процесів. Перевищив ліміт пам'яті — процес вбиває OOM killer"
+            color="purple"
+            delay={2}
+          >
+            <div className="mt-xl">
+              <CodeBlock title="обмеження ресурсів">{`
+docker run --rm --memory=256m --cpus=0.5 \\
+  wishlist-api:0.1
+`}</CodeBlock>
+            </div>
+          </InfoCardFeatured>
+        </div>
+
+        <CodeBlock title="контейнер бачить лише себе">{`
+$ docker run --rm alpine ps
+PID   USER     TIME  COMMAND
+    1 root      0:00 ps
+`}</CodeBlock>
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          Контейнер — це звичайний процес хоста: <code>ps aux</code> на хості його покаже.
+          Звідси і слабша ізоляція: вразливість ядра одна на всі контейнери.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 6. IMAGE, LAYER, CONTAINER ----------
+
+function ImageLayerContainerSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader icon={Layers} title="Образ, шар, контейнер" subtitle="Image, Layer, Container" />
+
+        <div className="slide-grid slide-grid--3col mb-xl">
+          <InfoCard
+            icon={Package}
+            title="Образ"
+            subtitle="Image"
+            description="Незмінний шаблон: стос шарів лише для читання плюс метадані — яку команду запускати, які змінні задати"
+            color="blue"
+            delay={1}
+          />
+          <InfoCard
+            icon={Layers}
+            title="Шар"
+            subtitle="Layer"
+            description="Результат однієї інструкції RUN, COPY чи ADD. Однакові шари зберігаються й завантажуються один раз для всіх образів"
+            color="purple"
+            delay={2}
+          />
+          <InfoCard
+            icon={Box}
+            title="Контейнер"
+            subtitle="Container"
+            description="Запущений екземпляр образу: його шари, спільні для всіх контейнерів з цього образу, плюс власний шар для запису, порожній на старті. Процес бачить усе це як одну файлову систему. docker rm прибирає лише шар для запису"
+            color="green"
+            delay={3}
+          />
+        </div>
+
+        <CodeBlock title="з яких шарів складається образ">{`
+$ docker history wishlist-api:0.1
+IMAGE          CREATED BY                                      SIZE
+a1b2c3d4e5f6   CMD ["uvicorn" "app.main:app" ...]              0B
+<missing>      COPY . .                                        412kB
+<missing>      RUN pip install -r requirements.txt             61MB
+<missing>      COPY requirements.txt .                         312B
+...            (шари базового образу python:3.12-slim)
+`}</CodeBlock>
+
         <div className="slide-grid slide-grid--2col">
           <HighlightBox color="orange" icon={AlertTriangle}>
-            Кеш із неправильним ключем гірший за його відсутність: конвеєр підтягує
-            старі залежності й падає незрозуміло. Ключ має однозначно описувати вміст
+            Шари лише <strong>додаються</strong>. Файл, видалений наступною інструкцією,
+            фізично лишається в попередньому шарі — і в образі, і в реєстрі.
           </HighlightBox>
-          <HighlightBox color="red" icon={XCircle}>
-            Ніколи не кешуйте результати збірки як спосіб «пришвидшити тести» —
-            саме так у конвеєр потрапляє код, якого вже немає в репозиторії
-          </HighlightBox>
-        </div>
- 
-        <div className="highlight-box highlight-box--blue mt-base">
-          <p className="highlight-box__text fs-body-sm">
-            Окремий крок <span className="font-mono">actions/cache</span> потрібен не
-            завжди: кроки налаштування середовища вміють кешувати самі — достатньо
-            параметра <span className="font-mono">cache:</span> у{' '}
-            <span className="font-mono">setup-node</span>,{' '}
-            <span className="font-mono">setup-python</span> чи{' '}
-            <span className="font-mono">setup-java</span>. Своїм ключем кешують те, що
-            ці кроки не покривають.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-// ---------- 11. PATH FILTERS (self-study) ----------
-
-function PathFiltersSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={FolderTree}
-                    title="Фільтри за шляхами"
-                    subtitle="Do Not Rebuild What Did Not Change"
-                />
-
-                <p className="fs-body text-secondary mb-base fade-in-delay-1">
-                    У репозиторії з кількома сервісами зміна в одному не має запускати перевірку
-                    решти. Інакше правка тексту в документації прогонить увесь набір тестів.
-                </p>
-
-                <CodeBlock title="Запуск лише за змінами в потрібних теках" color="blue">
-                    {`on:
-  pull_request:
-    paths:
-      - 'api/**'
-      - '.github/workflows/api.yml'
-
-  # окремий файл для другого сервісу
-  # з власним переліком шляхів`}
-                </CodeBlock>
-
-                <div className="slide-grid slide-grid--2col mt-xl mb-base">
-                    <div className="definition definition--green fade-in-delay-2">
-                        <p className="definition__term definition__term--green">Що виграємо</p>
-                        <p className="definition__description">
-                            Коротший час очікування, менше витрачених хвилин, чистіший список
-                            перевірок у pull request
-                        </p>
-                    </div>
-                    <div className="definition definition--red fade-in-delay-3">
-                        <p className="definition__term definition__term--red">Чим ризикуємо</p>
-                        <p className="definition__description">
-                            Зміна в спільному коді зачіпає обидва сервіси, а фільтр запустив лише
-                            один. Спільні теки треба вписувати в обидва переліки
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-base fade-in-delay-4">
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-orange">Про взаємодію з обов'язковими
-                            перевірками</strong> — окремо, у відповідній темі: перевірка, яка не
-                        запустилася через фільтр, здатна заблокувати злиття назавжди.
-                    </p>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Не забудьте додати сам файл конвеєра до переліку шляхів. Інакше зміна в
-                    ньому не запустить перевірку, і ви не побачите, що щойно його зламали.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 12. SECRETS ----------
-
-function SecretsSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={KeyRound}
-          title="Секрети в конвеєрі"
-          subtitle="Values You Must Not Commit"
-        />
-
-        <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Токени, ключі доступу, паролі до реєстру. Вони потрібні конвеєру — і не
-            повинні лежати в репозиторії. Ніколи, навіть у приватному:{' '}
-            <strong>історію не стирають</strong>.
-          </p>
-        </div>
-
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="definition definition--blue fade-in-delay-2">
-            <p className="definition__term definition__term--blue">Де зберігаються</p>
-            <p className="definition__description">
-              У сховищі секретів репозиторію або організації. Записати можна,
-              прочитати назад — ні: значення доступне лише конвеєру під час виконання
-            </p>
-          </div>
-          <div className="definition definition--purple fade-in-delay-3">
-            <p className="definition__term definition__term--purple">Маскування в журналах</p>
-            <p className="definition__description">
-              Система замінює значення секрету зірочками у виводі. Захист корисний,
-              але не абсолютний: перекодоване чи розрізане переносом значення вона
-              вже не впізнає
-            </p>
-          </div>
-        </div>
-
-        <div className="numbered-list mb-xl">
-          <div className="numbered-list__item fade-in-delay-4">
-            <div className="numbered-list__number">1</div>
-            <p className="numbered-list__text">
-              Мінімальні права: токен лише на те, що конвеєру справді потрібно
-            </p>
-          </div>
-          <div className="numbered-list__item fade-in-delay-5">
-            <div className="numbered-list__number">2</div>
-            <p className="numbered-list__text">
-              Секрети недоступні конвеєрам із чужих відгалужень — інакше будь-хто
-              відкрив би pull request і забрав їх
-            </p>
-          </div>
-          <div className="numbered-list__item fade-in-delay-5">
-            <div className="numbered-list__number">3</div>
-            <p className="numbered-list__text">
-              Скомпрометований секрет не «виправляють» — його відкликають і видають новий
-            </p>
-          </div>
-        </div>
-
-        <div className="outlined-card outlined-card--green mb-base fade-in-delay-5">
-          <h3 className="font-heading fs-card-title font-bold text-green mb-sm">
-            Найнадійніший секрет — той, якого немає
-          </h3>
-          <p className="fs-body text-secondary" style={{ margin: 0 }}>
-            Щоб команда скористалася токеном, він має існувати у відкритому вигляді в
-            пам'яті машини — тож гарантії, що він ніколи не потрапить у вивід, не існує
-            в принципі. Тому сучасний підхід інший: не ховати секрет надійніше, а{' '}
-            <strong>зробити витік дешевим</strong>. Замість збереженого назавжди ключа
-            конвеєр отримує тимчасові облікові дані на кілька хвилин, видані під цей
-            один прогін. Витік такого токена через годину нічого не вартий.
-          </p>
-        </div>
-
-        <HighlightBox color="orange" icon={EyeOff}>
-          Найчастіший витік — не в коді, а <strong>у виводі команди</strong>: хтось
-          додав докладний режим, і токен опинився в журналі публічного конвеєра, який
-          видно всім і після завершення прогону. Перевіряйте, що саме друкують ваші
-          кроки — особливо <span className="font-mono">set -x</span> і{' '}
-          <span className="font-mono">env</span>.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
-
-// ---------- 13. TEST PYRAMID ----------
-
-function TestPyramidSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={Triangle}
-          title="Піраміда тестів"
-          subtitle="Many Cheap, Few Expensive"
-        />
- 
-        <p className="fs-body text-secondary mb-base fade-in-delay-1">
-          Тести відрізняються не тільки тим, що перевіряють, а й ціною: часом
-          виконання, крихкістю та вартістю підтримки. Форма піраміди — це рекомендація
-          щодо пропорції.
-        </p>
- 
-        <div className="flex flex-col gap-base mb-xl">
-          <div className="outlined-card outlined-card--red fade-in-delay-2">
-            <div className="flex items-center gap-sm mb-sm">
-              <span className="badge badge--solid-red">Мало</span>
-              <h3 className="font-heading fs-card-title font-bold text-red">
-                Наскрізні
-                <span className="fs-body-sm text-muted font-mono"> — end-to-end, e2e</span>
-              </h3>
-            </div>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Уся система разом, від межі до межі, нічого не підміняється заглушками.
-              Найповніша перевірка й найдорожча: хвилини на прогін, потребує піднятого
-              середовища, ламається від дрібних змін інтерфейсу
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--orange fade-in-delay-3">
-            <div className="flex items-center gap-sm mb-sm">
-              <span className="badge badge--solid-orange">Помірно</span>
-              <h3 className="font-heading fs-card-title font-bold text-orange">
-                Інтеграційні
-                <span className="fs-body-sm text-muted font-mono"> — integration</span>
-              </h3>
-            </div>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Кілька компонентів у зв'язці: сервіс і база, сервіс і черга. Ловлять те,
-              чого не бачать модульні — неправильний запит, розбіжність у форматі даних
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--green fade-in-delay-4">
-            <div className="flex items-center gap-sm mb-sm">
-              <span className="badge badge--solid-green">Багато</span>
-              <h3 className="font-heading fs-card-title font-bold text-green">
-                Модульні
-                <span className="fs-body-sm text-muted font-mono"> — unit</span>
-              </h3>
-            </div>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Окрема функція чи клас без зовнішніх залежностей. Мілісекунди на прогін,
-              точно вказують місце помилки, майже не ламаються без причини
-            </p>
-          </div>
-        </div>
- 
-        <div className="outlined-card outlined-card--blue mb-base fade-in-delay-5">
-          <p className="fs-body-sm text-secondary" style={{ margin: 0 }}>
-            <strong className="text-blue">Межа між середнім і верхнім рівнем розмита,</strong>{' '}
-            і сперечатися про неї не варто. Практичне розрізнення таке: інтеграційний
-            тест <strong>сам піднімає</strong> те, що йому потрібно (контейнер із базою,
-            заглушку черги) і тому виконується прямо в конвеєрі; e2e нічого не піднімає —
-            він ходить до вже розгорнутого середовища. Звідси й різне місце в пайплайні
-          </p>
-        </div>
- 
-        <HighlightBox color="orange" icon={AlertTriangle}>
-          Перевернута піраміда — купа e2e і майже нічого нижче — виглядає солідно,
-          але дає конвеєр, який іде пів години й падає через раз{' '}
-          <strong>без зв'язку зі змінами</strong>. Довіру до такого конвеєра втрачають
-          швидко.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
- 
-// ---------- 14. WHERE TO RUN WHICH LEVEL ----------
- 
-function TestPlacementSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={Layers}
-          title="Який рівень де запускати"
-          subtitle="Fast Feedback First"
-        />
- 
-        <div className="outlined-card outlined-card--gradient-green-blue mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Принцип простий: <strong>найдешевші перевірки — найраніше</strong>. Немає
-            сенсу піднімати повне середовище, якщо код не проходить лінтер.
-          </p>
-        </div>
- 
-        <div className="numbered-list mb-xl">
-          <div className="numbered-list__item fade-in-delay-2">
-            <div className="numbered-list__number">1</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">Перед комітом, локально</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Форматування й лінтер на змінені файли. Секунди. Хук робить це сам
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-3">
-            <div className="numbered-list__number">2</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">На кожен pull request</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Лінтер, модульні (unit) та інтеграційні (integration) тести, аудит
-                залежностей. Ціль — вкластися в кілька хвилин, поки автор ще дивиться
-                на екран
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-4">
-            <div className="numbered-list__number">3</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">Після злиття в основну гілку</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Складання артефакта, наскрізні (e2e) тести на розгорнутому середовищі —
-                раніше їх запустити просто ніде
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-5">
-            <div className="numbered-list__number">4</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">За розкладом, уночі</p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Довгі прогони, навантажувальні тести, перевірка залежностей на щойно
-                оприлюднені вразливості
-              </p>
-            </div>
-          </div>
-        </div>
- 
-        <HighlightBox color="cyan">
-          Орієнтир для перевірок на pull request — <strong>до десяти хвилин</strong>.
-          Довше — і людина перемикається на іншу задачу, а повертається вже без
-          контексту. Тоді конвеєр перестає бути зворотним зв'язком і стає перешкодою.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
-
-
-// ---------- 15. LINTERS AND FORMATTERS ----------
-
-function LintersSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Ruler}
-                    title="Лінтери й форматери"
-                    subtitle="Two Different Jobs"
-                />
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--blue fade-in-delay-1">
-                        <div className="flex items-center gap-sm mb-base">
-                            <Ruler className="icon-lg text-blue" />
-                            <h3 className="font-heading fs-section font-bold text-blue">
-                                Форматер
-                            </h3>
-                        </div>
-                        <p className="fs-body text-secondary mb-base">
-                            Приводить код до єдиного вигляду: відступи, лапки, довжина рядка.
-                            Не думає про зміст.
-                        </p>
-                        <p className="fs-body-sm text-muted" style={{ margin: 0 }}>
-                            Головна цінність — припиняє суперечки про стиль у рецензіях
-                        </p>
-                    </div>
-
-                    <div className="outlined-card outlined-card--purple fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <ShieldAlert className="icon-lg text-purple" />
-                            <h3 className="font-heading fs-section font-bold text-purple">
-                                Лінтер
-                            </h3>
-                        </div>
-                        <p className="fs-body text-secondary mb-base">
-                            Шукає підозрілі конструкції: невикористана змінна, недосяжний код,
-                            порівняння, яке завжди істинне.
-                        </p>
-                        <p className="fs-body-sm text-muted" style={{ margin: 0 }}>
-                            Ловить справжні дефекти, а не лише оформлення
-                        </p>
-                    </div>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-base">
-                    <div className="definition definition--green fade-in-delay-3">
-                        <p className="definition__term definition__term--green">Конфігурація в репозиторії</p>
-                        <p className="definition__description">
-                            Правила лежать поруч із кодом і однакові для всіх — для редактора, для
-                            хука й для конвеєра. Інакше в кожного своє уявлення про правильне
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-4">
-                        <p className="definition__term definition__term--orange">Автовиправлення в CI</p>
-                        <p className="definition__description">
-                            У конвеєрі лінтер лише <strong>перевіряє</strong> й повертає помилку.
-                            Виправляти код за автора під час збірки — погана ідея: він не побачить,
-                            що саме змінилося
-                        </p>
-                    </div>
-                </div>
-
-                <HighlightBox color="red" icon={XCircle}>
-                    Найгірший варіант — увімкнути лінтер на старому проєкті з максимальною
-                    суворістю. Дві тисячі попереджень, які ніхто не читає, і команда швидко
-                    навчається їх ігнорувати. Правила додають поступово.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 16. COVERAGE ----------
-
-function CoverageSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={PieChart}
-                    title="Покриття коду"
-                    subtitle="A Useful Signal, a Terrible Target"
-                />
-
-                <div className="outlined-card outlined-card--gradient-blue-purple mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Покриття показує, які рядки <strong>виконалися</strong> під час тестів.
-                        Не те, що вони перевірені — лише те, що по них пройшли.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="outlined-card outlined-card--green fade-in-delay-2">
-                        <div className="flex items-center gap-sm mb-base">
-                            <CheckCircle2 className="icon-lg text-green" />
-                            <h3 className="font-heading fs-section font-bold text-green">
-                                Корисно
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Знайти цілі модулі без жодного тесту</p>
-                            <p className="fs-body text-secondary">Побачити, що покриття падає в новому коді</p>
-                            <p className="fs-body text-secondary">Підказати, куди подивитися рецензенту</p>
-                        </div>
-                    </div>
-
-                    <div className="outlined-card outlined-card--red fade-in-delay-3">
-                        <div className="flex items-center gap-sm mb-base">
-                            <XCircle className="icon-lg text-red" />
-                            <h3 className="font-heading fs-section font-bold text-red">
-                                Шкідливо
-                            </h3>
-                        </div>
-                        <div className="flex flex-col gap-sm">
-                            <p className="fs-body text-secondary">Ставити ціль «90% будь-якою ціною»</p>
-                            <p className="fs-body text-secondary">Оцінювати роботу людей за цим числом</p>
-                            <p className="fs-body text-secondary">Вважати високе покриття доказом якості</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-base fade-in-delay-4">
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-orange">Тест, який нічого не перевіряє,</strong>{' '}
-                        дає таке саме покриття, як і справжній: викликати функцію й не звірити
-                        результат — рядки виконалися, число зросло. Коли покриття стає метою,
-                        з'являється саме такий код.
-                    </p>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Розумний спосіб використання в конвеєрі — не абсолютний поріг, а{' '}
-                    <strong>покриття нового коду</strong>: змінені рядки мають бути протестовані.
-                    Тоді старий проєкт поступово покращується, і ніхто не переписує тисячу
-                    рядків заради числа.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 17. DEPENDENCY AUDIT ----------
-
-function DependencyAuditSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={ShieldAlert}
-          title="Аудит залежностей"
-          subtitle="Most of Your Code Is Not Yours"
-        />
- 
-        <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            У типовому проєкті власний код — це тисячі рядків, а разом із залежностями
-            в продакшен їде кількасот тисяч. Решта прийшла ззовні, і{' '}
-            <strong>вразливості в ній ваші</strong>, а не чужі.
-          </p>
-        </div>
- 
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="definition definition--blue fade-in-delay-2">
-            <p className="definition__term definition__term--blue">Прямі залежності</p>
-            <p className="definition__description">
-              Те, що ви свідомо додали. Їх десятки — і ви принаймні знаєте, навіщо
-              кожна потрібна
-            </p>
-          </div>
-          <div className="definition definition--orange fade-in-delay-2">
-            <p className="definition__term definition__term--orange">Транзитивні</p>
-            <p className="definition__description">
-              Залежності ваших залежностей. Їх сотні пакетів, ви їх не обирали й
-              зазвичай не знаєте про їх існування — доки не спрацює сканер
-            </p>
-          </div>
-        </div>
- 
-        <div className="outlined-card outlined-card--gradient-blue-purple mb-base fade-in-delay-3">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Аудит запускають <strong>двічі й по-різному</strong> — бо він відповідає на
-            два різні питання
-          </p>
-        </div>
- 
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="outlined-card outlined-card--green fade-in-delay-4">
-            <h3 className="font-heading fs-card-title font-bold text-green mb-sm">
-              На кожен pull request
-            </h3>
-            <p className="fs-body text-secondary mb-base">
-              «Чи не затягує <strong>ця зміна</strong> нову вразливу залежність?»
-              Звичайний крок після встановлення залежностей, поруч із лінтером і тестами.
-            </p>
-            <p className="fs-body-sm text-muted" style={{ margin: 0 }}>
-              Блокує злиття — але падає лише через те, що автор справді змінив
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--orange fade-in-delay-4">
-            <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-              За розкладом, щодня
-            </h3>
-            <p className="fs-body text-secondary mb-base">
-              «Чи не з'явилося вночі CVE в тому, що лежить у нас уже рік?» Окремий
-              конвеєр, який нічого не збирає, а лише перевіряє стан головної гілки.
-            </p>
-            <p className="fs-body-sm text-muted" style={{ margin: 0 }}>
-              Нікого не блокує — створює сповіщення, а не червоний чек у чужому PR
-            </p>
-          </div>
-        </div>
- 
-        <CodeBlock title=".github/workflows/audit.yml — нічний прогін" color="orange">
-{`on:
-  schedule:
-    - cron: '0 6 * * 1-5'    # щобудня о 6:00 UTC
-  workflow_dispatch:         # і руками, коли треба
- 
-jobs:
-  audit:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5
-      - run: npm audit --audit-level=high`}
-        </CodeBlock>
- 
-        <div className="outlined-card outlined-card--blue mt-xl mb-base fade-in-delay-5">
-          <p className="fs-body text-secondary" style={{ margin: 0 }}>
-            <strong className="text-blue">В інших екосистемах інструмент інший:</strong>{' '}
-            <span className="font-mono">pip-audit</span> у Python, OWASP
-            Dependency-Check у Gradle, <span className="font-mono">bundler-audit</span>{' '}
-            у Ruby. Ідея та сама — звірити встановлені версії з базою відомих
-            вразливостей. Відрізняється команда, не підхід.
-          </p>
-        </div>
- 
-        <div className="outlined-card outlined-card--red mb-base fade-in-delay-5">
-          <p className="fs-body text-secondary" style={{ margin: 0 }}>
-            <strong className="text-red">Якщо лишити тільки суворий аудит на PR,</strong>{' '}
-            рано чи пізно станеться таке: людина виправляє один рядок у README, а
-            конвеєр падає через вразливість, оприлюднену вночі в залежності, якої вона
-            не торкалася. Кілька таких випадків — і аудит вимикають назовсім. Далі він
-            не ловить уже нічого.
-          </p>
-        </div>
- 
-        <HighlightBox color="orange" icon={AlertTriangle}>
-          І не кожна знахідка потребує негайних дій: вразливість в інструменті збірки,
-          який не потрапляє в готовий образ, — не те саме, що вразливість у бібліотеці,
-          що обробляє запити користувачів. Знахідки{' '}
-          <strong>класифікують</strong>, а не гасять усі підряд.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
-
-// ---------- 18. REQUIRED CHECKS ----------
-
-function RequiredChecksSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={Lock}
-          title="Хто вирішує, чи можна злити"
-          subtitle="Repository Decides"
-        />
- 
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="outlined-card outlined-card--orange fade-in-delay-1">
-            <h3 className="font-heading fs-section font-bold text-orange mb-sm">
-              Червоний хрестик
-            </h3>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Тести впали — злити все одно можна. У п'ятницю під реліз хтось зіллє,
-              будучи впевненим, що «там просто нестабільний тест»
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--green fade-in-delay-2">
-            <h3 className="font-heading fs-section font-bold text-green mb-sm">
-              Заблоковане злиття
-            </h3>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Кнопка недоступна. Домовленість стала властивістю системи й більше не
-              залежить від дедлайну та настрою
-            </p>
-          </div>
-        </div>
- 
-        <div className="outlined-card outlined-card--gradient-blue-purple mb-base fade-in-delay-3">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Конвеєр лише <strong>повідомляє</strong> результат. Блокує злиття не він,
-            а правило в налаштуваннях репозиторію — і зв'язані вони{' '}
-            <strong>за іменем завдання</strong>
-          </p>
-        </div>
- 
-        <div className="slide-grid slide-grid--2col mb-base">
-          <CodeBlock title="ci.yml — звідки беруться імена" color="blue">
-{`jobs:
-  lint:                    # → перевірка "lint"
-    runs-on: ubuntu-24.04
-    steps: [...]
- 
-  test:                    # → "test (api)"
-    strategy:              #   і "test (notifier)"
-      matrix:
-        service: [api, notifier]
-    runs-on: ubuntu-24.04
-    steps: [...]`}
-          </CodeBlock>
- 
-          <CodeBlock title="Settings → Branches → правило для main" color="purple">
-{`Branch name pattern: main
- 
-[x] Require a pull request before merging
-      Required approvals: 1
-[x] Require status checks to pass
-      [x] Require branches to be up to date
-      Required checks:
-          lint               ← обираються зі списку,
-          test (api)            але зберігаються
-          test (notifier)       як текст
-[x] Do not allow bypassing the above`}
-          </CodeBlock>
-        </div>
- 
-        <div className="outlined-card outlined-card--orange mb-xl fade-in-delay-4">
-          <p className="fs-body text-secondary" style={{ margin: 0 }}>
-            <strong className="text-orange">Два висновки з правої колонки.</strong>{' '}
-            Перший: у списку стоять імена <strong>завдань</strong>, а не воркфлоу — файл
-            може називатися <span className="font-mono">CI</span>, а в правилі буде{' '}
-            <span className="font-mono">lint</span>. Другий: кожен варіант матриці дає
-            окрему перевірку зі своїм іменем, тож додали третій сервіс — не забудьте
-            додати його й сюди.
-          </p>
-        </div>
- 
-        <div className="slide-grid slide-grid--2col mb-base">
-          <HighlightBox color="orange" icon={AlertTriangle}>
-            Перейменували завдання в YAML — правило шукає стару назву, не знаходить і
-            чекає вічно. Нове завдання при цьому зелене, а злиття заблоковане
-          </HighlightBox>
-          <HighlightBox color="red" icon={XCircle}>
-            Перевірка, що не запустилася через фільтр за шляхами, теж блокує злиття
-            назавжди: результату не буде, а система його чекає. Лікується
-            завданням-заглушкою з тим самим іменем
+          <HighlightBox color="blue" icon={FileCheck}>
+            Формат образу — відкритий стандарт <strong>OCI</strong>. Образ, зібраний Docker,
+            запустить і Podman, і containerd, і будь-яка хмарна платформа.
           </HighlightBox>
         </div>
- 
-        <div className="highlight-box highlight-box--blue">
-          <p className="highlight-box__text fs-body-sm">
-            У GitLab те саме зветься <strong>protected branches</strong> і вимогою
-            успішного пайплайна для merge request. Назви інші, механіка й пастки — ті самі.
-          </p>
-        </div>
       </div>
     </div>
   );
 }
 
-// ---------- 19. CODE REVIEW ----------
+// ---------- 7. CONTAINER LIFECYCLE ----------
 
-function CodeReviewSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={MessageSquare}
-                    title="Code review як частина процесу"
-                    subtitle="What Machines Cannot Check"
-                />
-
-                <p className="fs-body text-secondary mb-base fade-in-delay-1">
-                    Автоматика перевіряє те, що можна описати правилом. Усе інше — робота
-                    рецензента, і саме тому рецензія не замінюється конвеєром, а доповнює його.
-                </p>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <InfoCard
-                        icon={CheckCircle2}
-                        title="Чи вирішує задачу"
-                        subtitle="Найважливіше"
-                        description="Код може бути бездоганним і робити не те, що потрібно. Машина цього не побачить ніколи"
-                        color="green"
-                        delay={1}
-                    />
-                    <InfoCard
-                        icon={Layers}
-                        title="Чи зрозуміло за пів року"
-                        subtitle="Читабельність"
-                        description="Іменування, структура, коментар там, де рішення неочевидне. Читати будуть частіше, ніж писати"
-                        color="blue"
-                        delay={2}
-                    />
-                    <InfoCard
-                        icon={ShieldAlert}
-                        title="Що станеться в поганому випадку"
-                        subtitle="Межові ситуації"
-                        description="Порожній список, недоступна база, повільна відповідь, одночасні запити"
-                        color="orange"
-                        delay={3}
-                    />
-                    <InfoCard
-                        icon={Triangle}
-                        title="Чи є тест на зміну"
-                        subtitle="Не число покриття"
-                        description="Конкретно: чи перевірено те, що змінилося, і чи впаде тест, якщо зміну відкотити"
-                        color="purple"
-                        delay={4}
-                    />
-                </div>
-
-                <div className="slide-grid slide-grid--2col">
-                    <HighlightBox color="red" icon={XCircle}>
-                        «Виглядає добре» без жодного зауваження — не рецензія. Це підпис під
-                        чужою роботою, за яку тепер відповідаєте й ви
-                    </HighlightBox>
-                    <HighlightBox color="cyan">
-                        Дрібні зауваження про стиль — робота форматера, не людини. Якщо в рецензіях
-                        сперечаються про лапки, у проєкті бракує форматера
-                    </HighlightBox>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 20. CODEOWNERS AND BRANCH PROTECTION ----------
-
-function BranchProtectionSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={Users}
-          title="Власники коду й захист гілок"
-          subtitle="Rules That Do Not Depend on Memory"
-        />
-
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="outlined-card outlined-card--blue fade-in-delay-1">
-            <div className="flex items-center gap-sm mb-base">
-              <Users className="icon-lg text-blue" />
-              <h3 className="font-heading fs-section font-bold text-blue">
-                Власники коду
-              </h3>
-            </div>
-            <p className="fs-body text-secondary mb-base">
-              Файл <span className="font-mono">.github/CODEOWNERS</span>, що зіставляє
-              шляхи в репозиторії з людьми або командами.
-            </p>
-            <div className="flex flex-col gap-sm">
-              <p className="fs-body text-secondary">Рецензентів призначає система</p>
-              <p className="fs-body text-secondary">Зміну в теці інфраструктури побачить той, хто за неї відповідає</p>
-              <p className="fs-body text-secondary">Ніхто не забуває покликати потрібну людину</p>
-            </div>
-            <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-              Сам по собі файл нічого не блокує — лише надсилає запит на рецензію
-            </p>
-          </div>
-
-          <div className="outlined-card outlined-card--purple fade-in-delay-2">
-            <div className="flex items-center gap-sm mb-base">
-              <Lock className="icon-lg text-purple" />
-              <h3 className="font-heading fs-section font-bold text-purple">
-                Захист гілки
-              </h3>
-            </div>
-            <p className="fs-body text-secondary mb-base">
-              Набір умов у налаштуваннях репозиторію — та сама форма, що й для
-              обов'язкових перевірок.
-            </p>
-            <div className="flex flex-col gap-sm">
-              <p className="fs-body text-secondary">Обов'язковий pull request</p>
-              <p className="fs-body text-secondary">Схвалення від власників коду</p>
-              <p className="fs-body text-secondary">Пройдені перевірки конвеєра</p>
-              <p className="fs-body text-secondary">Гілка актуальна щодо основної</p>
-              <p className="fs-body text-secondary">Заборона перезапису історії</p>
-            </div>
-            <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-              Блокує саме це: без галочки <span className="font-mono">Require review
-              from Code Owners</span> власник лише отримує сповіщення
-            </p>
-          </div>
-        </div>
-
-        <div className="slide-grid slide-grid--2col mb-base">
-          <div className="outlined-card outlined-card--orange fade-in-delay-3">
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              <strong className="text-orange">Скидання застарілих схвалень</strong>{' '}
-              <span className="fs-body-sm font-mono text-muted">
-                (Dismiss stale pull request approvals when new commits are pushed)
-              </span>{' '}
-              — без цієї опції автор отримує схвалення, а потім дописує що завгодно,
-              і зміна їде вже неперевіреною. Коміти, запушені в гілку, одразу стають
-              частиною pull request
-            </p>
-          </div>
-
-          <div className="outlined-card outlined-card--blue fade-in-delay-4">
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              <strong className="text-blue">Актуальність гілки</strong>{' '}
-              <span className="fs-body-sm font-mono text-muted">
-                (Require branches to be up to date before merging)
-              </span>{' '}
-              — та сама вимога, з якої ми починали: перевіряється результат злиття з
-              поточною основною, а не сама гілка. Інакше дві зміни, кожна зелена
-              окремо, разом ламають збірку
-            </p>
-          </div>
-        </div>
-
-        <HighlightBox color="cyan">
-          Ці налаштування — теж частина конвеєра, просто описана не в YAML (у GitLab —
-          merge request approvals і code owners, назви інші). Разом вони дають
-          властивість, заради якої все й будувалося:{' '}
-          <strong>в основній гілці не може опинитися неперевірений код</strong>.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
-
-// ---------- 21. FEEDBACK SPEED ----------
-
-function FeedbackSpeedSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Timer}
-                    title="Швидкість зворотного зв'язку"
-                    subtitle="The Metric That Decides Everything"
-                />
-
-                <div className="outlined-card outlined-card--gradient-green-blue mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Конвеєр цінний рівно настільки, наскільки швидко він відповідає. Повільний
-                        конвеєр не роблять швидшим — його <strong>обходять</strong>.
-                    </p>
-                </div>
-
-                <div className="numbered-list mb-xl">
-                    <div className="numbered-list__item fade-in-delay-2">
-                        <div className="numbered-list__number">1</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">До 10 хвилин — людина чекає</p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Контекст у голові, виправлення йде одразу
-                            </p>
-                        </div>
-                    </div>
-                    <div className="numbered-list__item fade-in-delay-3">
-                        <div className="numbered-list__number">2</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">10–30 хвилин — перемикається</p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Повертається вже з іншою задачею в голові, згадує заново
-                            </p>
-                        </div>
-                    </div>
-                    <div className="numbered-list__item fade-in-delay-4">
-                        <div className="numbered-list__number">3</div>
-                        <div className="numbered-list__content">
-                            <p className="numbered-list__text">Понад 30 хвилин — перестає дивитися</p>
-                            <p className="fs-body-sm text-muted mt-sm">
-                                Результат подивиться завтра. Або не подивиться
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="slide-grid slide-grid--2col">
-                    <div className="definition definition--green fade-in-delay-5">
-                        <p className="definition__term definition__term--green">Що прискорює</p>
-                        <p className="definition__description">
-                            Кеш залежностей, паралельні завдання, фільтри за шляхами, найдешевші
-                            перевірки першими
-                        </p>
-                    </div>
-                    <div className="definition definition--orange fade-in-delay-5">
-                        <p className="definition__term definition__term--orange">Що сповільнює непомітно</p>
-                        <p className="definition__description">
-                            Наскрізні тести на кожен коміт, послідовні завдання без потреби, повне
-                            середовище там, де вистачило б заглушки
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 22. FLAKY TESTS ----------
-
-function FlakyTestsSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={Dice5}
-                    title="Нестабільні тести"
-                    subtitle="The Fastest Way to Kill Trust"
-                />
-
-                <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
-                    <p className="fs-lg text-primary" style={{ margin: 0 }}>
-                        Тест, який падає через раз без змін у коді, гірший за відсутність тесту.
-                        Він навчає команду <strong>перезапускати конвеєр</strong> замість того,
-                        щоб читати помилку.
-                    </p>
-                </div>
-
-                <div className="slide-grid slide-grid--2col mb-xl">
-                    <div className="definition definition--orange fade-in-delay-2">
-                        <p className="definition__term definition__term--orange">Час і затримки</p>
-                        <p className="definition__description">
-                            Очікування фіксованої кількості секунд замість очікування події.
-                            На повільній машині-виконавці не встигає
-                        </p>
-                    </div>
-                    <div className="definition definition--purple fade-in-delay-2">
-                        <p className="definition__term definition__term--purple">Порядок виконання</p>
-                        <p className="definition__description">
-                            Тест залежить від даних, які лишив попередній. Працює в одному порядку,
-                            падає в іншому
-                        </p>
-                    </div>
-                    <div className="definition definition--blue fade-in-delay-3">
-                        <p className="definition__term definition__term--blue">Спільний стан</p>
-                        <p className="definition__description">
-                            Одна база на паралельні прогони, той самий файл, той самий порт.
-                            Локально по черзі — добре, у конвеєрі одночасно — ні
-                        </p>
-                    </div>
-                    <div className="definition definition--cyan fade-in-delay-3">
-                        <p className="definition__term definition__term--cyan">Зовнішній світ</p>
-                        <p className="definition__description">
-                            Звернення до справжнього стороннього сервісу. Він недоступний — падає
-                            ваш тест, хоча ваш код не змінювався
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--orange mb-base fade-in-delay-4">
-                    <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                        <strong className="text-orange">Автоматичний перезапуск</strong> здається
-                        рішенням і насправді ним не є: він ховає проблему й дає їй жити роками.
-                        Прийнятний лише як тимчасовий захід — із заведеною задачею на виправлення.
-                    </p>
-                </div>
-
-                <HighlightBox color="cyan">
-                    Робочий підхід: нестабільний тест <strong>виносять</strong> з обов'язкових
-                    перевірок і одразу заводять на нього задачу. Так конвеєр лишається
-                    вартим довіри, а проблема — видимою.
-                </HighlightBox>
-            </div>
-        </div>
-    );
-}
-
-// ---------- 23. MOVING VERSIONS ----------
-
-function MovingVersionsSlide() {
-  return (
-    <div className="slide">
-      <div className="slide__content">
-        <SlideHeader
-          icon={Tag}
-          title="Що ламається без ваших змін"
-          subtitle="Moving Tags and Someone Else's Code"
-        />
- 
-        <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
-          <p className="fs-lg text-primary" style={{ margin: 0 }}>
-            Конвеєр, який учора був зелений, сьогодні падає, хоча ви нічого не міняли.
-            Причина майже завжди одна: щось у ньому вказане{' '}
-            <strong>рухомою міткою</strong>.
-          </p>
-        </div>
- 
-        <div className="slide-grid slide-grid--2col mb-xl">
-          <div className="definition definition--orange fade-in-delay-2">
-            <p className="definition__term definition__term--orange">Образ виконавця</p>
-            <p className="definition__description">
-              Мітка <span className="font-mono">ubuntu-latest</span> означає «остання
-              підтримувана версія», і вона змінюється. Для стабільних конвеєрів
-              пишуть конкретну — <span className="font-mono">ubuntu-24.04</span>
-            </p>
-          </div>
-          <div className="definition definition--blue fade-in-delay-2">
-            <p className="definition__term definition__term--blue">Готові кроки</p>
-            <p className="definition__description">
-              Користуватися чужими кроками нормально — без них конвеєр ніхто не пише.
-              Різниця з бібліотеками в тому, що тут немає файлу блокування версій:
-              мітку <span className="font-mono">@v5</span> автор переставляє на нові
-              коміти, і завтра той самий рядок виконає інший код
-            </p>
-          </div>
-        </div>
- 
-        <p className="fs-body text-secondary mb-base fade-in-delay-3">
-          Тому питання не «чи брати чуже», а <strong>наскільки міцно це закріпити</strong>:
-        </p>
- 
-        <div className="flex flex-col gap-base mb-base">
-          <div className="outlined-card outlined-card--red fade-in-delay-3">
-            <h3 className="font-heading fs-card-title font-bold text-red mb-sm">
-              Без версії або за рухомою міткою
-              <span className="fs-body-sm font-mono text-muted">
-                {' '}— actions/checkout@main
-              </span>
-            </h3>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Найгірший варіант: виконується те, що зараз у гілці автора. Якщо його
-              обліковий запис зламали, ви виконуєте код зловмисника на машині, яка
-              має ваші секрети
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--orange fade-in-delay-4">
-            <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-              За мажорною версією
-              <span className="fs-body-sm font-mono text-muted">
-                {' '}— actions/checkout@v5
-              </span>
-            </h3>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Розумний дефолт, і більшість проєктів живе саме так: виправлення
-              приходять самі, несумісні зміни — ні. Мітка все одно рухома, але автор
-              обіцяє не ламати сумісність у межах мажорної версії
-            </p>
-          </div>
- 
-          <div className="outlined-card outlined-card--green fade-in-delay-5">
-            <h3 className="font-heading fs-card-title font-bold text-green mb-sm">
-              За хешем коміту
-              <span className="fs-body-sm font-mono text-muted">
-                {' '}— actions/checkout@08c6903 # v5.0.1
-              </span>
-            </h3>
-            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-              Ви виконуєте рівно той код, який перевіряли — хеш переставити не можна.
-              Оновлення стає свідомою дією, тож поруч пишуть коментар із версією, щоб
-              було видно, що саме закріплено. Так роблять там, де ціна компрометації
-              висока
-            </p>
-          </div>
-        </div>
- 
-        <HighlightBox color="purple">
-          До цієї теми повернемось у лекції про безпеку — там вона називається захистом
-          ланцюга постачання й стосується не лише конвеєра, а всього, що ви тягнете
-          ззовні: образів, пакетів, бібліотек.
-        </HighlightBox>
-      </div>
-    </div>
-  );
-}
-
-
-// ---------- 23_1. DEMO ----------
-
-function DemoSlide() {
+function ContainerLifecycleSlide() {
   return (
     <div className="slide">
       <div className="slide__content">
         <SlideHeader
           icon={Play}
-          title="Збираємо все докупи"
-          subtitle="One Pipeline, Live"
+          title="Життєвий цикл контейнера"
+          subtitle="Container Lifecycle"
         />
- 
-        <p className="fs-body text-secondary mb-base fade-in-delay-1">
-          Увесь конвеєр, про який ми зараз говорили, — тридцять рядків.
-          Кожен крок тут уже знайомий, і кожен відповідає окремому слайду.
-        </p>
- 
-        <CodeBlock title=".github/workflows/ci.yml" color="blue">
-{`name: CI
- 
-on:
-  pull_request:
-  push:
-    branches: [main]
- 
-jobs:
-  check:
-    runs-on: ubuntu-24.04        # конкретна версія, не latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'           # кеш без окремого actions/cache
-      - run: npm ci
-      - run: npm run lint        # найдешевше — найраніше
-      - run: npm test
-      - run: npm audit --audit-level=high
- 
-  build:
-    needs: check                 # чекає, поки check стане зеленим
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/`}
-        </CodeBlock>
- 
-        <div className="slide-grid slide-grid--2col mt-xl mb-base">
-          <div className="definition definition--purple fade-in-delay-2">
-            <p className="definition__term definition__term--purple">
-              <span className="font-mono">needs</span> — єдине, що задає порядок
-            </p>
-            <p className="definition__description">
-              Без нього обидва job стартували б одночасно. Збирати застосунок,
-              доки невідомо, чи проходять тести, немає сенсу — тому build чекає
-            </p>
-          </div>
-          <div className="definition definition--orange fade-in-delay-2">
-            <p className="definition__term definition__term--orange">
-              Чому checkout і npm ci повторюються
-            </p>
-            <p className="definition__description">
-              build — інша машина, порожня. Усе, що робив check, для неї не існує.
-              Передати щось між job можна лише через артефакти
-            </p>
-          </div>
-        </div>
- 
-        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-3">
-          <p className="fs-body text-secondary mb-base">
-            <strong className="text-blue">Відносно останнього кроку:</strong> тут{' '}
-            <span className="font-mono">dist</span> ніхто не використовує — build
-            останній крок, і артефакт просто видалиться через якійсь час (90 днів для публічних репозиторіїв). 
-            У робочому конвеєрі його забрав би наступний job, який
-            розгортає — але це вже тема наступної лекції.
-          </p>
-          <p className="fs-body text-secondary mb-sm">
-            А ось випадок, де артефакт окупається одразу:
-          </p>
-          <CodeBlock title="Зберегти звіт навіть тоді, коли тести впали" color="blue">
-{`      - run: npm test -- --coverage
-      - uses: actions/upload-artifact@v4
-        if: always()           # інакше крок пропуститься після падіння
-        with:
-          name: coverage
-          path: coverage/`}
-          </CodeBlock>
-          <p className="fs-body-sm text-muted mt-base" style={{ marginBottom: 0 }}>
-            За замовчуванням наступні кроки після невдалого пропускаються — тому
-            журнали й звіти саме невдалих прогонів зберігаються лише з{' '}
-            <span className="font-mono">if: always()</span>
-          </p>
-        </div>
- 
-        <div className="numbered-list mb-base">
-          <div className="numbered-list__item fade-in-delay-4">
-            <div className="numbered-list__number">1</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">
-                Відкриваємо pull request зі зламаним стилем коду
-              </p>
-              <p className="fs-body-sm text-muted mt-sm">
-                check падає на лінтері — тести навіть не доходять, а build не
-                стартує взагалі
-              </p>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="команди, які знадобляться щодня">{`
+# build an image from the Dockerfile in the current directory
+docker build -t wishlist-api:0.1 .
+
+# start in background, publish port host:container
+docker run -d --name api -p 8000:8000 wishlist-api:0.1
+
+docker ps              # running containers
+docker ps -a           # including stopped ones
+docker logs -f api     # follow the output
+docker exec -it api sh # shell inside a running container
+
+docker stop api        # graceful stop
+docker rm api          # remove container and its writable layer
+`}</CodeBlock>
+
+          <div className="fade-in-delay-1">
+            <div className="outlined-card outlined-card--blue mb-base">
+              <h3 className="info-card__title mb-sm">Стани</h3>
+              <DefBadge term="created" description="створений, але ще не запущений" color="cyan" />
+              <DefBadge term="running" description="процес працює" color="green" />
+              <DefBadge term="exited" description="процес завершився, файли контейнера ще на місці" color="orange" />
+              <DefBadge term="removed" description="контейнера й шару для запису більше немає" color="purple" />
             </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-4">
-            <div className="numbered-list__number">2</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">
-                Дивимось журнал: конкретний файл і рядок
-              </p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Не «щось зламалось», а точне місце — у цьому й сенс швидкого
-                зворотного зв'язку
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-5">
-            <div className="numbered-list__number">3</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">
-                Кнопка злиття недоступна
-              </p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Бо перевірку позначено обов'язковою в налаштуваннях гілки. Вимкнемо
-                правило — кнопка одразу активна, хоч код той самий
-              </p>
-            </div>
-          </div>
-          <div className="numbered-list__item fade-in-delay-5">
-            <div className="numbered-list__number">4</div>
-            <div className="numbered-list__content">
-              <p className="numbered-list__text">
-                Виправляємо, відправляємо — зелено, кнопка розблокована
-              </p>
-              <p className="fs-body-sm text-muted mt-sm">
-                Другий прогін помітно швидший: залежності вже в кеші. Унизу сторінки
-                з'являється артефакт dist, який можна завантажити
-              </p>
+
+            <div className="outlined-card outlined-card--green">
+              <Point>
+                <strong className="text-green">docker run --rm</strong> — контейнер видалиться
+                сам після завершення. Зручно для разових команд і експериментів.
+              </Point>
             </div>
           </div>
         </div>
- 
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          <code>-p 8000:8000</code> читається як <strong>«хост:контейнер»</strong>: Docker
+          пересилає з'єднання з порту хоста на мережевий інтерфейс контейнера. Тому
+          застосунок усередині має слухати <code>0.0.0.0</code>. Його <code>127.0.0.1</code> —
+          це loopback самого контейнера, і пересланий трафік туди не потрапляє: порт
+          опубліковано, а відповіді немає. Детально — у наступній лекції.
+        </HighlightBox>
       </div>
     </div>
   );
 }
 
+// ---------- 8. REGISTRY: TAG VS DIGEST ----------
 
-// ---------- 24. COMMON MISTAKES ----------
+function RegistryTagsSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Tag}
+          title="Реєстр: тег проти дайджесту"
+          subtitle="Registry, Tags and Digests"
+        />
+
+        <CodeBlock title="анатомія посилання на образ">{`
+ghcr.io/nromanen/wishlist-api:1.4.2
+└──┬──┘ └──────┬───────────┘ └─┬─┘
+ реєстр    репозиторій        тег
+
+ghcr.io/nromanen/wishlist-api@sha256:9f86d081884c7d65...
+                              └──────────┬──────────┘
+                                     дайджест
+`}</CodeBlock>
+
+        <div className="mt-xl mb-xl">
+          <DefBadge term="Реєстр" description="сервер, що зберігає образи: Docker Hub, GitHub Container Registry, Amazon ECR" color="blue" />
+          <DefBadge term="Тег" description="рухома мітка: сьогодні вказує на один образ, завтра її можна перевісити на інший" color="orange" />
+          <DefBadge term="Дайджест" description="хеш вмісту образу. Змінився хоч байт — змінився дайджест. Підробити неможливо" color="green" />
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-base">
+          <div className="outlined-card outlined-card--red fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">Чому latest небезпечний</h3>
+            <Point>Це просто тег за замовчуванням. Найновішим він буває лише тоді, коли автор не забув його перевісити</Point>
+            <Point>Автор перевісив тег — і той самий <code>FROM python:latest</code> через місяць дасть інший образ</Point>
+            <Point>Локально latest — це те, що ви завантажили востаннє: у вас і в колеги це можуть бути різні образи</Point>
+            <Point>Після збою неможливо сказати, яка саме версія працювала і на що відкочуватися</Point>
+          </div>
+          <div className="outlined-card outlined-card--green fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Як правильно</h3>
+            <Point>У <code>FROM</code> — конкретна версія: <code>python:3.12-slim</code>, не <code>python</code></Point>
+            <Point>Для розгортання — версія застосунку, а де важлива відтворюваність — дайджест</Point>
+            <Point>Опублікований тег версії не перезаписують</Point>
+          </div>
+        </div>
+
+        <HighlightBox color="blue" icon={BookOpen}>
+          Як тегувати власні образи (версія, хеш коміту, гілка) і як публікувати їх із
+          конвеєра — тема наступної лекції.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 9. DOCKERFILE BASICS ----------
+
+function DockerfileBasicsSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={FileCode}
+          title="Dockerfile: основні інструкції"
+          subtitle="Dockerfile Basics"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="fade-in-delay-1">
+            <CodeBlock title="Dockerfile — перша, наївна версія">{`
+FROM python:3.12
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD uvicorn app.main:app --host 0.0.0.0 --port 8000
+`}</CodeBlock>
+            <HighlightBox color="orange" icon={AlertTriangle}>
+              Цей Dockerfile <strong>працює</strong>. І має щонайменше п'ять проблем —
+              до кінця лекції знайдемо й виправимо кожну.
+            </HighlightBox>
+
+            <CollapsibleCodeBlock color='red' buttonLabel='який порт відкривати в браузері на PC]'> 
+            {`
+docker run -d -p 8080:8000 wishlist-api:0.1
+docker run -d -p 8000:8080 wishlist-api:0.1`}
+             </CollapsibleCodeBlock>
+          </div>
+
+          <div className="outlined-card outlined-card--blue fade-in-delay-2">
+            <DefBadge term="FROM" description="базовий образ, від якого починаємо: його готові шари стають фундаментом нашого" color="blue" />
+            <DefBadge term="WORKDIR" description="робочий каталог для наступних інструкцій" color="blue" />
+            <DefBadge term="COPY" description="файли з контексту збірки в образ, результат — новий шар" color="blue" />
+            <DefBadge term="ADD" description="як COPY, але ще розпаковує архіви й завантажує за URL чи з git-репозиторіїв — без потреби не використовують" color="blue" />
+            <DefBadge term="RUN" description="команда під час збірки, результат — новий шар" color="blue" />
+            <DefBadge term="ENV" description="змінна середовища, зашита в образ" color="purple" />
+            <DefBadge term="ARG" description="параметр лише на час збірки" color="purple" />
+            <DefBadge term="USER" description="від імені якого користувача виконувати далі" color="purple" />
+            <DefBadge term="EXPOSE" description="лише документація: порт сам не відкривається" color="cyan" />
+            <DefBadge term="CMD" description="що запустити під час старту контейнера" color="green" />
+            <DefBadge term="ENTRYPOINT" description="незмінна частина команди старту" color="green" />
+            <DefBadge term="HEALTHCHECK" description="команда, якою Docker періодично перевіряє, чи застосунок справді відповідає" color="green" />
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--2col">
+          <div className="outlined-card outlined-card--purple fade-in-delay-3">
+            <h3 className="info-card__title mb-sm">CMD чи ENTRYPOINT</h3>
+            <Point>
+              <code>ENTRYPOINT</code> — <strong>що</strong> запускається. <code>CMD</code> — аргументи
+              за замовчуванням, які легко замінити: <code>docker run образ інша-команда</code>.
+              Для звичайного вебсервісу достатньо одного <code>CMD</code>.
+            </Point>
+            <CodeBlock title="що замінюється при docker run">{`
+# only CMD: the whole command is replaceable
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+
+docker run img              # → uvicorn app.main:app --host 0.0.0.0
+docker run img sh           # → sh  (shell instead of the app)
+
+# ENTRYPOINT + CMD: fixed program, default arguments
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+CMD ["--port", "8000"]
+
+docker run img              # → ... --port 8000
+docker run img --port 9000  # → ... --port 9000
+`}</CodeBlock>
+            <Point>
+              Замінити й <code>ENTRYPOINT</code> можна, але лише явно:{' '}
+              <code>docker run --entrypoint sh образ</code>.
+            </Point>
+          </div>
+          <div className="outlined-card outlined-card--orange fade-in-delay-4">
+            <h3 className="info-card__title mb-sm">Exec-форма проти shell-форми</h3>
+            <CodeBlock title="що реально запускає Docker">{`
+# exec form
+CMD ["uvicorn", "app.main:app"]
+# → uvicorn app.main:app
+#   PID 1: uvicorn
+
+# shell form
+CMD uvicorn app.main:app
+# → /bin/sh -c "uvicorn app.main:app"
+#   PID 1: sh, uvicorn is its child process
+`}</CodeBlock>
+            <Point>Різниця здається косметичною, але ламає зупинку контейнера</Point>
+            <Point>
+              Для <code>CMD</code> і <code>ENTRYPOINT</code> — завжди exec-форма.
+              У <code>RUN</code> звичайна shell-форма нормальна: це команда збірки, її не зупиняють сигналом.
+            </Point>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 9_1. MORE DOCKERFILE SYNTAX (self-study) ----------
+
+function DockerfileMoreSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={FileCode}
+          title="Що ще буває в Dockerfile"
+          subtitle="Variables, Metadata and Less Common Instructions"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="Dockerfile">{`
+# syntax=docker/dockerfile:1
+
+ARG PYTHON_VERSION=3.12
+FROM python:\${PYTHON_VERSION}-slim
+
+LABEL org.opencontainers.image.source="https://github.com/nromanen/wishlist-api"
+
+ARG APP_VERSION=dev
+ENV APP_VERSION=\${APP_VERSION} \\
+    APP_HOME=/app
+
+WORKDIR \${APP_HOME}
+
+RUN <<EOF
+set -e
+apt-get update
+apt-get install -y --no-install-recommends libpq5
+rm -rf /var/lib/apt/lists/*
+EOF
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+`}</CodeBlock>
+
+          <div className="outlined-card outlined-card--blue fade-in-delay-1">
+            <DefBadge term="# syntax" description="директива в першому рядку: яку версію синтаксису Dockerfile використати" color="blue" />
+            <DefBadge term="ARG" description="параметр збірки зі значенням за замовчуванням, у запущеному контейнері його немає" color="blue" />
+            <DefBadge term="--build-arg" description="перевизначає ARG під час збірки: docker build --build-arg APP_VERSION=1.4.2 ." color="blue" />
+            <DefBadge term="ENV" description="змінна, яка лишається в образі й видна застосунку під час роботи" color="purple" />
+            <DefBadge term="${VAR}" description="підстановка змінних у FROM, WORKDIR, ENV, COPY та інших інструкціях" color="purple" />
+            <DefBadge term="LABEL" description="метадані образу: джерело, версія, автор — видно в docker inspect" color="green" />
+            <DefBadge term="<<EOF" description="heredoc: кілька рядків shell в одному RUN без \ і && у кожному рядку — як звичайний скрипт" color="green" />
+          </div>
+        </div>
+
+        <div className="outlined-card outlined-card--purple mb-base fade-in-delay-2">
+          <h3 className="info-card__title mb-sm">Рідше, але трапляється</h3>
+          <DefBadge term="VOLUME" description="позначає каталог для даних; кожен запуск без -v створює новий анонімний том, тож краще задавати томи під час запуску" color="purple" />
+          <DefBadge term="STOPSIGNAL" description="який сигнал надсилає docker stop, якщо застосунок чекає не SIGTERM" color="purple" />
+          <DefBadge term="SHELL" description="замінює /bin/sh -c для shell-форми; потрібно здебільшого в Windows-образах" color="purple" />
+          <DefBadge term="ONBUILD" description="інструкція, що спрацює під час збірки образу, який візьме цей як базовий" color="purple" />
+        </div>
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          <code>ARG</code> перед <code>FROM</code> видно лише в самому <code>FROM</code>.
+          Щоб використати його нижче, оголосіть ще раз без значення: <code>ARG PYTHON_VERSION</code>.
+          А в heredoc без <code>set -e</code> помилка в середньому рядку не зупинить збірку.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 10. BUILD CACHE ----------
+
+function BuildCacheSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Zap}
+          title="Порядок інструкцій і кеш збірки"
+          subtitle="Instruction Order and Build Cache"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            Docker перевикористовує збережений результат інструкції, якщо ні вона сама,
+            ні файли, які вона копіює, не змінились. Щойно одна інструкція змінилася,{' '}
+            <strong>вона і всі наступні</strong> виконуються заново.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="fade-in-delay-2">
+            <CodeBlock title="❌ будь-яка правка коду → pip install заново" color="orange">{`
+FROM python:3.12-slim
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+`}</CodeBlock>
+            <Point>Змінили один рядок у <code>main.py</code> — і чекаємо хвилину, поки встановляться ті самі залежності.</Point>
+          </div>
+          <div className="fade-in-delay-3">
+            <CodeBlock title="✅ залежності кешуються окремо" color="green">{`
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+#RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+COPY . .
+`}</CodeBlock>
+            <Point>Шар із залежностями перезбирається лише тоді, коли змінився сам <code>requirements.txt</code>.</Point>
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--2col">
+          <HighlightBox color="green" icon={CheckCircle2}>
+            Правило порядку інструкцій: <strong>від того, що змінюється рідко, до того,
+              що змінюється часто</strong>. Системні пакети → залежності → код. Для Node те
+            саме: спершу копіюємо <code>package.json</code> і <code>package-lock.json</code>,
+            потім <code>npm ci</code>, і лише після цього решту коду.
+          </HighlightBox>
+          <HighlightBox color="orange" icon={AlertTriangle}>
+            <code>apt-get update</code> і <code>apt-get install</code> пишуть в одному{' '}
+            <code>RUN</code>. Якщо вони окремі, то, коли згодом додадуть пакет у рядок{' '}
+            <code>install</code>, <code>update</code> візьметься з кешу, і пакети ставитимуться
+            за застарілим списком — або збірка просто впаде.
+          </HighlightBox>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 11. BUILD CONTEXT & .dockerignore ----------
+
+function BuildContextSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={FolderX}
+          title="Контекст збірки і .dockerignore"
+          subtitle="Build Context and .dockerignore"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            Крапка в <code>docker build .</code> — це <strong>контекст</strong>: каталог, увесь
+            вміст якого передається збирачу. <code>COPY . .</code> скопіює в образ усе, що
+            в контексті, — разом із <code>.git</code>, <code>.venv</code> і <code>.env</code>.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title=".dockerignore">{`
+.git
+.github
+.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+dist/
+.env
+.env.*
+Dockerfile
+docker-compose*.yml
+`}</CodeBlock>
+
+          <div>
+            <InfoCard
+              icon={Zap}
+              title="Швидкість"
+              subtitle="Speed"
+              description="Менший контекст — швидша передача. node_modules легко важить сотні мегабайт"
+              color="blue"
+              delay={2}
+            />
+            <InfoCard
+              icon={Layers}
+              title="Кеш"
+              subtitle="Cache"
+              description="Без .dockerignore кожен коміт змінює .git — і COPY . . щоразу інвалідує кеш"
+              color="purple"
+              delay={3}
+            />
+            <InfoCard
+              icon={Lock}
+              title="Безпека"
+              subtitle="Security"
+              description="Файли, що не потрапили в контекст, не можуть випадково потрапити в образ"
+              color="green"
+              delay={4}
+            />
+          </div>
+        </div>
+
+        <HighlightBox color="red" icon={AlertTriangle}>
+          <code>.env</code> в образі — це секрет у реєстрі <strong>назавжди</strong>. Навіть якщо
+          наступна інструкція його видалить, він лишиться в попередньому шарі, і будь-хто з
+          доступом до образу його дістане.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 12. MULTI-STAGE BUILD ----------
+
+function MultiStageSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={GitMerge}
+          title="Багатоетапна збірка"
+          subtitle="Multi-Stage Build"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="wishlist-ui/Dockerfile">{`
+# stage 1: build tools, node_modules, sources
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# stage 2: only the built static files
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+`}</CodeBlock>
+
+          <div>
+            <InfoCard
+              icon={Wrench}
+              title="Етап збірки"
+              subtitle="Build stage"
+              description="Node, компілятор TypeScript, сотні мегабайт node_modules. Потрібні лише для того, щоб отримати dist/"
+              color="orange"
+              delay={1}
+            />
+            <InfoCard
+              icon={Package}
+              title="Фінальний етап"
+              subtitle="Runtime stage"
+              description="nginx і кілька мегабайт статики. Все, що було на етапі збірки, у фінальний образ не потрапляє"
+              color="green"
+              delay={2}
+            />
+            <InfoCard
+              icon={Server}
+              title="А для Python?"
+              subtitle="And for Python?"
+              description="Виграш менший, але корисний, коли залежності треба компілювати: gcc і заголовки лишаються на етапі збірки"
+              color="blue"
+              delay={3}
+            />
+          </div>
+        </div>
+
+        <HighlightBox color="blue" icon={Server}>
+          На фінальному етапі використовуємо nginx: після <code>npm run build</code> фронтенд —
+          це лише статичні файли, і Node для них уже не потрібен. Віддавати їх може будь-який
+          вебсервер, а nginx робить це швидко й важить кілька десятків мегабайтів.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 12_1. SPA ROUTING IN NGINX (self-study) ----------
+
+function SpaRoutingSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Server}
+          title="Маршрутизація SPA в nginx"
+          subtitle="Single-Page App Fallback"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            В односторінковому застосунку (Vue, React, Angular) маршрути обробляє код у
+            браузері. Поки користувач клікає по посиланнях, сервер про це навіть не знає.
+            Але при оновленні сторінки чи переході за прямим посиланням (<code>/wishlists/42</code>) браузер просить у
+            сервера файл за цією адресою — а такого файлу на диску немає. Результат: 404.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="nginx.conf">{`
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+
+    location / {
+        # file → directory → fall back to the SPA entry point
+        try_files $uri $uri/ /index.html;
+    }
+}
+`}</CodeBlock>
+
+          <div className="outlined-card outlined-card--purple fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Що робить try_files</h3>
+            <DefBadge term="$uri" description="шукає файл за адресою: /assets/app.js віддається як є" color="purple" />
+            <DefBadge term="$uri/" description="шукає каталог з такою назвою" color="purple" />
+            <DefBadge term="/index.html" description="нічого не знайшлося — віддає точку входу, а сторінку показує вже застосунок" color="purple" />
+          </div>
+        </div>
+
+        <CodeBlock title="фінальний етап Dockerfile">{`
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+`}</CodeBlock>
+
+        <div className="slide-grid slide-grid--2col mt-xl mb-base">
+          <div className="outlined-card outlined-card--green fade-in-delay-3">
+            <h3 className="info-card__title mb-sm">
+              <CheckCircle2 className="icon-md text-green" /> Потрібно
+            </h3>
+            <Point>
+              Маршрутизатор у режимі history: адреси без решітки, як-от{' '}
+              <code>/wishlists/42</code>. Це режим за замовчуванням у React Router
+              та Angular, у Vue — <code>createWebHistory()</code>
+            </Point>
+          </div>
+          <div className="outlined-card outlined-card--orange fade-in-delay-4">
+            <h3 className="info-card__title mb-sm">
+              <XCircle className="icon-md text-orange" /> Не потрібно
+            </h3>
+            <Point>
+              Режим hash: адреси виду <code>/#/wishlists/42</code>. Усе після{' '}
+              <code>#</code> браузер серверу не надсилає, тож сервер завжди віддає{' '}
+              <code>index.html</code>
+            </Point>
+          </div>
+        </div>
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          Це правило потрібне будь-якому серверу статики, не лише nginx. На хостингах і
+          PaaS воно зазвичай зветься <strong>SPA fallback</strong> або перенаправленням усіх
+          адрес на <code>/index.html</code> — шукайте його в налаштуваннях, щойно після
+          деплою внутрішні сторінки почнуть віддавати 404.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 13. BASE IMAGE ----------
+
+function BaseImageSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Box}
+          title="Вибір базового образу"
+          subtitle="Choosing a Base Image"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <InfoCard
+            icon={Package}
+            title="Повний"
+            subtitle="python:3.12, node:22 · сотні МБ – 1 ГБ"
+            description="Повний дистрибутив із компіляторами й утилітами. Зручно відлагоджувати, але більшість цього в продакшені не потрібна"
+            color="orange"
+            delay={1}
+          />
+          <InfoCard
+            icon={CheckCircle2}
+            title="slim"
+            subtitle="python:3.12-slim, node:22-slim · у рази менший"
+            description="Мінімальний Debian: glibc і звичні інструменти без зайвого. Розумний старт за замовчуванням там, де такий варіант є"
+            color="green"
+            delay={2}
+          />
+          <InfoCard
+            icon={Minimize2}
+            title="alpine"
+            subtitle="python:3.12-alpine, nginx:alpine · десятки МБ"
+            description="Найменший дистрибутив, але замість glibc — musl. Пакети з нативним кодом під нього бувають не зібрані, і тоді їх доводиться компілювати"
+            color="purple"
+            delay={3}
+          />
+          <InfoCard
+            icon={Lock}
+            title="distroless і scratch"
+            subtitle="лише середовище виконання або взагалі нічого"
+            description="Без shell і менеджера пакетів. scratch — порожній образ для статично зібраних програм, наприклад на Go. Найменша поверхня атаки, найважче відлагоджувати"
+            color="blue"
+            delay={4}
+          />
+        </div>
+
+        <HighlightBox color="green" icon={CheckCircle2}>
+          Для компільованих мов головний вибір — не дистрибутив, а <strong>SDK чи
+            середовище виконання</strong>: збирають у <code>eclipse-temurin:21-jdk</code>,
+          запускають у <code>eclipse-temurin:21-jre</code>. Компілятор у фінальному образі не потрібен.
+        </HighlightBox>
+
+        <div className="outlined-card outlined-card--red mb-base fade-in-delay-5">
+          <h3 className="info-card__title mb-sm">Архітектура процесора</h3>
+          <Point>
+            Образ збирається під архітектуру машини, на якій ви його збираєте. Mac на Apple
+            Silicon дає <code>arm64</code>, а хмарна платформа найчастіше працює на{' '}
+            <code>amd64</code>. Результат — <code>exec format error</code> одразу після
+            розгортання.
+          </Point>
+        </div>
+
+        <CodeBlock title="зібрати під цільову платформу">{`
+docker buildx build --platform linux/amd64 -t wishlist-api:0.1 .
+`}</CodeBlock>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 14. IMAGE SIZE: BEFORE & AFTER ----------
+
+function ImageSizeSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Minimize2}
+          title="Розмір образу: до і після"
+          subtitle="Image Size: What Matters Most"
+        />
+
+        <div className="slide-grid slide-grid--3col mb-xl">
+          <InfoCardFeatured
+            icon={XCircle}
+            title="≈1,1 ГБ"
+            subtitle="wishlist-api, наївна версія"
+            description="python:3.12, COPY . . разом із .git і .venv, кеш pip усередині"
+            color="orange"
+            delay={1}
+          />
+          <InfoCardFeatured
+            icon={CheckCircle2}
+            title="≈200 МБ"
+            subtitle="wishlist-api, slim"
+            description="python:3.12-slim, .dockerignore, pip --no-cache-dir"
+            color="green"
+            delay={2}
+          />
+          <InfoCardFeatured
+            icon={CheckCircle2}
+            title="≈1 ГБ → ≈50 МБ"
+            subtitle="wishlist-ui"
+            description="Багатоетапна збірка: node залишився на етапі збірки, у фінальному образі — nginx і статика"
+            color="blue"
+            delay={3}
+          />
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-base">
+          <div className="outlined-card outlined-card--purple fade-in-delay-4">
+            <h3 className="info-card__title mb-sm">Що дає найбільше — за спаданням</h3>
+            <DefBadge term="1" description="базовий образ: slim замість повного" color="purple" />
+            <DefBadge term="2" description="багатоетапна збірка: інструменти збірки не їдуть у фінал" color="purple" />
+            <DefBadge term="3" description=".dockerignore: у контекст не потрапляє сміття" color="purple" />
+            <DefBadge term="4" description="прибирання кешів у тому самому RUN, що їх створив" color="purple" />
+          </div>
+          <CodeBlock title="де шукати зайве">{`
+docker images wishlist-api
+docker history wishlist-api:0.1
+
+# interactive layer explorer
+dive wishlist-api:0.1
+`}</CodeBlock>
+        </div>
+
+        <HighlightBox color="blue" icon={Gauge}>
+          Цифри орієнтовні — заміряйте свої. Розмір не самоціль: менший образ швидше
+          завантажується під час кожного розгортання і містить менше пакетів, у яких
+          можуть знайти вразливість.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 15. NON-ROOT USER ----------
+
+function NonRootSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={UserX}
+          title="Непривілейований користувач"
+          subtitle="Running as Non-Root"
+        />
+
+        <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            За замовчуванням процес у контейнері працює від <strong>root</strong> — і це той
+            самий UID 0, що й на хості. Вразливість у застосунку плюс помилка ізоляції — і
+            зловмисник отримує root уже на сервері.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="wishlist-api/Dockerfile">{`
+FROM python:3.12-slim
+WORKDIR /app
+
+# fixed UID: predictable file ownership on volumes
+RUN useradd --create-home --uid 10001 app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# code stays root-owned: app can read it, but not change it
+COPY . .
+
+USER app
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+`}</CodeBlock>
+
+          <div>
+            <InfoCard
+              icon={CheckCircle2}
+              title="Перевірка"
+              subtitle="Verify"
+              description="docker exec api id — має бути uid=10001(app), а не uid=0(root)"
+              color="green"
+              delay={2}
+            />
+            <InfoCard
+              icon={Server}
+              title="Порти вище 1024"
+              subtitle="Unprivileged ports"
+              description="Слухайте 8000 чи 8080, а не 80: на частині платформ непривілейований процес низький порт не відкриє"
+              color="blue"
+              delay={3}
+            />
+            <InfoCard
+              icon={Package}
+              title="nginx без root"
+              subtitle="Unprivileged nginx"
+              description="Для wishlist-ui є готовий nginxinc/nginx-unprivileged — він слухає 8080 і не потребує root"
+              color="purple"
+              delay={4}
+            />
+          </div>
+        </div>
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          Якщо застосунку треба писати у свій каталог — завантажені файли, локальна база, —
+          права видають <strong>лише на цей каталог</strong>:{' '}
+          <code>RUN mkdir /app/uploads && chown app:app /app/uploads</code>. Сам код краще
+          лишити власністю root: так його не змінити навіть від імені застосунку.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 16. CONFIGURATION VIA ENVIRONMENT ----------
+
+function ConfigEnvSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Settings}
+          title="Конфігурація через середовище"
+          subtitle="Configuration via Environment"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            <strong>Один образ — усі середовища.</strong> Те, що відрізняється між dev,
+            staging і продакшеном, у образ не зашивається, а передається під час запуску
+            через змінні середовища.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="передати конфігурацію під час запуску">{`
+docker run -d -p 8000:8000 \\
+  -e DATABASE_URL=postgresql://wish:secret@db:5432/wishlist \\
+  -e REDIS_URL=redis://cache:6379/0 \\
+  wishlist-api:0.1
+
+# or load all variables from a file
+docker run -d --env-file .env.staging wishlist-api:0.1
+`}</CodeBlock>
+
+          <div className="outlined-card outlined-card--red fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Секрети — не в Dockerfile</h3>
+            <Point>
+              <code>ENV DB_PASSWORD=...</code> і <code>ARG TOKEN=...</code> видно через{' '}
+              <code>docker history</code> та <code>docker inspect</code> будь-кому, хто має образ.
+            </Point>
+            <Point>
+              Секрет, потрібний під час збірки, передають через{' '}
+              <code>RUN --mount=type=secret,id=token</code> і{' '}
+              <code>docker build --secret id=token,src=...</code> — він доступний лише цій
+              інструкції як файл <code>/run/secrets/token</code> і не потрапляє в жоден шар.
+            </Point>
+          </div>
+        </div>
+
+        <HighlightBox color="blue" icon={Settings}>
+          <strong>Змінні середовища у фронтенді.</strong> На відміну від бекенду, код
+          фронтенду виконується в браузері, а не в контейнері, і змінних контейнера не бачить.
+          Тому збирач — Vite, webpack чи Angular CLI — підставляє значення прямо в JS під час
+          збірки: у wishlist-ui це <code>VITE_API_BASE</code>. Адресу API задають на етапі
+          збірки, і для кожного середовища збирають свій образ.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 17. VOLUMES ----------
+
+function VolumesSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={HardDrive}
+          title="Дані: том проти шару"
+          subtitle="Volumes vs Container Layer"
+        />
+
+        <div className="outlined-card outlined-card--red mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            Усе, що процес записав у файлову систему контейнера, лежить у його шарі для
+            запису. <code>docker rm</code> — і даних немає. Postgres без тому втратить базу
+            при першому ж оновленні образу.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--3col mb-xl">
+          <InfoCard
+            icon={Database}
+            title="Іменований том"
+            subtitle="Named volume"
+            description="Docker сам керує місцем на диску. Для даних, що мають пережити контейнер: бази, завантажені файли"
+            color="green"
+            delay={2}
+          />
+          <InfoCard
+            icon={Laptop}
+            title="Прив'язаний каталог"
+            subtitle="Bind mount"
+            description="Каталог хоста всередині контейнера. Для розробки: правите код у редакторі — контейнер бачить зміни одразу. На Mac і Windows помітно повільніший за том"
+            color="blue"
+            delay={3}
+          />
+          <InfoCard
+            icon={Zap}
+            title="tmpfs"
+            subtitle="In-memory mount"
+            description="Файли в оперативній пам'яті, зникають із зупинкою. Для тимчасових даних, які не варто писати на диск"
+            color="purple"
+            delay={4}
+          />
+        </div>
+
+        <CodeBlock title="база переживає видалення контейнера">{`
+docker volume create pgdata
+docker run -d --name db \\
+  -e POSTGRES_PASSWORD=secret \\
+  -v pgdata:/var/lib/postgresql/data \\
+  postgres:16
+
+# careful: a leading ./ turns it into a bind mount
+#   -v ./pgdata:/var/lib/postgresql/data
+# unambiguous long form:
+#   --mount type=volume,src=pgdata,dst=/var/lib/postgresql/data
+`}</CodeBlock>
+        <HighlightBox color="blue" icon={Gauge}>
+          На Linux різниці у швидкості немає. На Mac і Windows контейнери працюють у ВМ, і
+          прив'язаний каталог ходить через спільний доступ до файлів — особливо повільно на
+          тисячах дрібних файлів на кшталт <code>node_modules</code>. На Windows тримайте
+          проєкт у файловій системі WSL, а не на диску <code>C:\</code>.
+        </HighlightBox>
+
+        <HighlightBox color="green" icon={CheckCircle2}>
+          Контейнер має бути <strong>одноразовим</strong>: видалили, запустили новий з
+          оновленого образу — і нічого не втратили.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 18. SINGLE PROCESS ----------
+
+function SingleProcessSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Workflow}
+          title="Один процес на контейнер"
+          subtitle="One Concern per Container"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="outlined-card outlined-card--red fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">❌ Усе в одному</h3>
+            <Point>API, Postgres, Redis і nginx в одному контейнері під  під менеджером процесів типу supervisord</Point>
+            <Point>Упав Redis — Docker цього не бачить: головний процес живий</Point>
+            <Point>Журнали чотирьох сервісів змішані в одному потоці</Point>
+            <Point>Оновити API — означає перезапустити й базу</Point>
+            <Point>Масштабувати API окремо від бази неможливо</Point>
+          </div>
+          <div className="outlined-card outlined-card--green fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">✅ Окремі контейнери</h3>
+            <Point>Кожен сервіс — свій образ, свій життєвий цикл, свої журнали</Point>
+            <Point>Docker стежить за головним процесом і бачить, коли той завершився</Point>
+            <Point>Postgres і Redis — готові офіційні образи, збирати їх не потрібно</Point>
+            <Point>Сервіси знаходять одне одного через мережу Docker — наступна лекція</Point>
+          </div>
+        </div>
+
+        <HighlightBox color="blue" icon={BookOpen}>
+          «Один процес» точніше читати як <strong>«одна відповідальність»</strong>. uvicorn
+          із кількома воркерами — це нормально: формально процесів кілька, але сервіс один.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 19. SIGNALS & GRACEFUL SHUTDOWN ----------
+
+function SignalsSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={Power}
+          title="Сигнали й коректна зупинка"
+          subtitle="Signals and Graceful Shutdown"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            <code>docker stop</code> надсилає процесу з <strong>PID 1</strong> сигнал{' '}
+            <code>SIGTERM</code> і чекає 10 секунд. Не завершився — отримує{' '}
+            <code>SIGKILL</code>: незавершені запити обриваються, з'єднання з базою не
+            закриваються.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="fade-in-delay-2">
+            <CodeBlock title="❌ shell-форма" color="orange">{`
+CMD uvicorn app.main:app --host 0.0.0.0
+
+# PID 1: /bin/sh -c "uvicorn ..."
+# sh does not forward SIGTERM to uvicorn
+# → 10 s of waiting, then SIGKILL
+`}</CodeBlock>
+          </div>
+          <div className="fade-in-delay-3">
+            <CodeBlock title="✅ exec-форма" color="green">{`
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+
+# PID 1: uvicorn itself
+# receives SIGTERM, finishes requests, exits
+# → stops in under a second
+`}</CodeBlock>
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--2col">
+          <div className="outlined-card outlined-card--purple fade-in-delay-4">
+            <h3 className="info-card__title mb-sm">Код завершення підкаже причину</h3>
+            <DefBadge term="0" description="процес завершився сам або коректно обробив SIGTERM" color="green" />
+            <DefBadge term="143" description="128 + 15: завершений сигналом SIGTERM без власного обробника (типова дія або так виходить сам застосунок, наприклад JVM)" color="blue" />
+            <DefBadge term="137" description="128 + 9: вбитий SIGKILL — не встиг зупинитися або перевищив ліміт пам'яті" color="orange" nowrap />
+          </div>
+          <div>
+            <HighlightBox color="orange" icon={AlertTriangle}>
+              Іноді перед стартом застосунку треба щось зробити: перевірити конфігурацію,
+              дочекатися бази, згенерувати файл налаштувань. Для цього пишуть скрипт-обгортку{' '}
+              <code>entrypoint.sh</code>, і останнім рядком у ньому має бути <code>exec "$@"</code> —
+              тоді застосунок замінить shell і стане PID 1. Для процесів, які взагалі не
+              обробляють сигнали, є <code>docker run --init</code>.
+            </HighlightBox>
+
+            <CodeBlock title="entrypoint.sh">{`
+#!/bin/sh
+set -e
+
+# fail fast if configuration is missing
+if [ -z "$DATABASE_URL" ]; then
+  echo "DATABASE_URL is not set" >&2
+  exit 1
+fi
+
+# replace the shell with CMD: the app becomes PID 1
+exec "$@"
+`}</CodeBlock>
+
+            <CodeBlock title="Dockerfile">{`
+COPY --chmod=755 entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+`}</CodeBlock>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 20. LOGGING TO STDOUT ----------
+
+function LoggingSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={ScrollText}
+          title="Журнали у стандартний вивід"
+          subtitle="Logs to stdout and stderr"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <div className="outlined-card outlined-card--red fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">❌ Журнал у файл усередині контейнера</h3>
+            <Point>Щоб його прочитати, треба заходити в контейнер</Point>
+            <Point>Ротацію доводиться налаштовувати в кожному образі окремо</Point>
+            <Point>Платформа про цей файл не знає і забрати його не може</Point>
+          </div>
+          <div className="outlined-card outlined-card--green fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">✅ stdout і stderr</h3>
+            <Point>Docker збирає вивід сам: <code>docker logs</code> працює одразу</Point>
+            <Point>Ротацію й збір налаштовують один раз для всіх контейнерів</Point>
+            <Point>Будь-яка платформа вміє забирати цей потік і зберігати централізовано</Point>
+            <Point>Офіційний образ nginx уже перенаправляє свої журнали в stdout</Point>
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-base">
+          <CodeBlock title="Dockerfile">{`
+# print output immediately, without buffering
+ENV PYTHONUNBUFFERED=1
+`}</CodeBlock>
+          <CodeBlock title="читання журналів">{`
+docker logs -f --tail 100 api
+docker logs --since 10m api
+`}</CodeBlock>
+        </div>
+
+        <HighlightBox color="orange" icon={AlertTriangle}>
+          Без <code>PYTHONUNBUFFERED=1</code> Python накопичує вивід у буфері: журнали
+          з'являються із запізненням, а останні рядки перед падінням — найцінніші — можуть
+          не з'явитися взагалі.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 21. HEALTHCHECK ----------
+
+function HealthcheckSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={HeartPulse}
+          title="Перевірка стану контейнера"
+          subtitle="Container Healthcheck"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            <strong>running ≠ працює.</strong> Процес може бути живим, але зависнути або
+            втратити з'єднання з базою. Перевірка стану регулярно запитує сам застосунок,
+            чи він здатен відповідати.
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="Dockerfile">{`
+# probe every 30 s; fail if no answer within 3 s;
+# ignore failures during the first 10 s after start;
+# mark unhealthy after 3 failures in a row
+HEALTHCHECK --interval=30s --timeout=3s \\
+            --start-period=10s --retries=3 \\
+  CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
+`}</CodeBlock>
+
+          <div className="outlined-card outlined-card--purple fade-in-delay-2">
+            <h3 className="info-card__title mb-sm">Стани в docker ps</h3>
+            <DefBadge term="starting" description="перевірка ще не пройшла жодного разу, триває start-period" color="blue" />
+            <DefBadge term="healthy" description="остання перевірка успішна" color="green" />
+            <DefBadge term="unhealthy" description="перевірка не пройшла кілька разів поспіль" color="orange" />
+            <CodeBlock>{`
+$ docker ps
+IMAGE             STATUS
+wishlist-api:0.1  Up 5 seconds (health: starting)
+wishlist-api:0.1  Up 2 minutes (healthy)
+`}</CodeBlock>
+          </div>
+        </div>
+
+        <div className="slide-grid slide-grid--2col">
+          <HighlightBox color="orange" icon={AlertTriangle}>
+            Docker сам по собі <strong>не перезапускає</strong> контейнер у стані unhealthy —
+            лише показує статус. Використовують його інструменти рівнем вище: наприклад,
+            Compose чекає healthy від бази, перш ніж стартувати API (наступна лекція).
+          </HighlightBox>
+          <HighlightBox color="blue" icon={Wrench}>
+            У <code>slim</code>-образі немає <code>curl</code>, тому перевіряємо самим Python.
+            Ендпоїнт <code>/health</code> має бути дешевим: без важких запитів до бази на
+            кожен виклик.
+          </HighlightBox>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 22. IMAGE SCANNING ----------
+
+function ScanningSlide() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={ScanSearch}
+          title="Сканування образу"
+          subtitle="Image Vulnerability Scanning"
+        />
+
+        <div className="outlined-card outlined-card--blue mb-xl fade-in-delay-1">
+          <p className="fs-body text-secondary" style={{ margin: 0 }}>
+            Сканер розбирає шари образу, складає перелік встановлених пакетів — системних і
+            мовних — і звіряє їх із базами відомих вразливостей (CVE).
+          </p>
+        </div>
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <InfoCard
+            icon={ScanSearch}
+            title="Trivy"
+            subtitle="Aqua Security"
+            description="Відкритий, працює локально й у конвеєрі. Можна не встановлювати — запустити як контейнер aquasec/trivy"
+            color="blue"
+            delay={2}
+          />
+          <InfoCard
+            icon={Package}
+            title="Docker Scout"
+            subtitle="Docker"
+            description="Вбудований у Docker Desktop, підказує, на який базовий образ оновитися. Потребує входу в обліковий запис Docker"
+            color="purple"
+            delay={3}
+          />
+        </div>
+
+        <CodeBlock title="перевірка локально й у конвеєрі">{`
+trivy image --severity HIGH,CRITICAL wishlist-api:0.1
+
+# the same without installing Trivy (pin the version in CI)
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
+  aquasec/trivy image --severity HIGH,CRITICAL wishlist-api:0.1
+
+# non-zero exit code fails the CI job
+trivy image --severity CRITICAL --exit-code 1 wishlist-api:0.1
+
+docker scout cves wishlist-api:0.1
+`}</CodeBlock>
+
+        <HighlightBox color="green" icon={CheckCircle2}>
+          Більшість знахідок — у базовому образі, а не у вашому коді. Найдієвіші ліки:
+          slim або distroless і регулярне перезбирання з оновленою базою. Як вбудувати це
+          в конвеєр — у лекції про DevSecOps.
+        </HighlightBox>
+      </div>
+    </div>
+  );
+}
+
+// ---------- 23. COMMON MISTAKES ----------
 
 function CommonMistakesSlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader
-                    icon={AlertTriangle}
-                    title="Типові помилки"
-                    subtitle="What Kills a Pipeline"
-                />
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader icon={AlertTriangle} title="Типові помилки" subtitle="Common Mistakes" />
 
-                <div className="slide-grid slide-grid--2col">
-                    <div className="flex flex-col gap-base">
-                        <div className="outlined-card outlined-card--red fade-in-delay-1">
-                            <h3 className="font-heading fs-card-title font-bold text-red mb-sm">
-                                Перевірка, яку можна проігнорувати
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Червоний хрестик без блокування злиття — це порада. Під тиском релізу
-                                поради не працюють
-                            </p>
-                        </div>
+        <div className="slide-grid slide-grid--2col">
+          <InfoCard
+            icon={Tag}
+            title="latest у FROM"
+            subtitle={<SlideLink to={8} />}
+            description="Збірка невідтворювана: той самий Dockerfile через місяць дає інший образ"
+            color="orange"
+            delay={1}
+          />
+          <InfoCard
+            icon={Zap}
+            title="COPY . . до залежностей"
+            subtitle={<SlideLink to={10} />}
+            description="Будь-яка правка коду заново встановлює всі пакети"
+            color="orange"
+            delay={1}
+          />
+          <InfoCard
+            icon={Lock}
+            title="Секрет у шарі"
+            subtitle={<>Слайди <SlideLink to={11} short />, <SlideLink to={16} short /></>}
+            description=".env у контексті, пароль в ENV чи ARG — і він назавжди в реєстрі"
+            color="orange"
+            delay={2}
+          />
+          <InfoCard
+            icon={UserX}
+            title="Root за замовчуванням"
+            subtitle={<SlideLink to={15} />}
+            description="Ніхто не додав USER, тож застосунок працює з повними правами"
+            color="orange"
+            delay={2}
+          />
+          <InfoCard
+            icon={Server}
+            title="Слухає 127.0.0.1"
+            subtitle={<SlideLink to={7} />}
+            description="Порт опубліковано, контейнер працює, а запити ззовні не доходять"
+            color="orange"
+            delay={3}
+          />
+          <InfoCard
+            icon={Cpu}
+            title="Образ під arm64"
+            subtitle={<SlideLink to={13} />}
+            description="Зібрали на Mac, розгорнули на amd64 — exec format error"
+            color="orange"
+            delay={3}
+          />
+          <InfoCard
+            icon={HardDrive}
+            title="Дані в шарі контейнера"
+            subtitle={<SlideLink to={17} />}
+            description="Оновили образ бази без тому — і почали з порожньої бази"
+            color="orange"
+            delay={4}
+          />
+          <InfoCard
+            icon={Power}
+            title="Shell-форма CMD"
+            subtitle={<SlideLink to={19} />}
+            description="Кожна зупинка триває 10 секунд і закінчується SIGKILL, код 137"
+            color="orange"
+            delay={4}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-                        <div className="outlined-card outlined-card--red fade-in-delay-2">
-                            <h3 className="font-heading fs-card-title font-bold text-red mb-sm">
-                                Конвеєр на пів години
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Його не роблять швидшим — його обходять. Кеш, паралельність і фільтри
-                                не оптимізація, а умова того, що конвеєром користуватимуться
-                            </p>
-                        </div>
+// ---------- 24. FINAL DOCKERFILE ----------
 
-                        <div className="outlined-card outlined-card--red fade-in-delay-3">
-                            <h3 className="font-heading fs-card-title font-bold text-red mb-sm">
-                                Гілка, яка живе тижнями
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Найкращий конвеєр не врятує, якщо інтегруватися раз на два тижні.
-                                Інструмент без практики не працює
-                            </p>
-                        </div>
-                    </div>
+function FinalDockerfileSlide() {
+  const [stepMap, setStepMap] = useState({});
+  const [showFinalCode, setShowFinalCode] = useState(false);
 
-                    <div className="flex flex-col gap-base">
-                        <div className="outlined-card outlined-card--orange fade-in-delay-2">
-                            <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-                                Життя з нестабільним тестом
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Команда вчиться натискати «перезапустити» замість читати помилку. Далі
-                                так само перезапустять справжній збій
-                            </p>
-                        </div>
+  const challenges = [
+    {
+      id: 1,
+      title: '1. Контекст збірки (.dockerignore)',
+      icon: AlertTriangle,
+      question: 'У проєкті є .git, .env та venv. Якщо зробити COPY . ., що потрапить в образ і як це вилікувати?',
+      solution: 'Створити файл .dockerignore поруч із Dockerfile:',
+      code: `.git\n.venv\n.env\n__pycache__\n*.pyc`,
+    },
+    {
+      id: 2,
+      title: '2. Базовий образ і теги',
+      icon: ShieldCheck,
+      question: 'Рядок "FROM python:3.12" має проблему. Яку?',
+      solution: 'Використати slim-версію (зменшує вагу з 1GB до 150MB):',
+      code: `FROM python:3.12-slim`,
+    },
+    {
+      id: 3,
+      title: '3. Кешування шарів',
+      icon: Zap,
+      question: 'Як змінити порядок COPY та RUN, щоб не чекати завантаження залежностей при кожній зміні коду?',
+      solution: 'Спочатку копіюємо лише файл залежностей, інсталюємо їх, і лише потім копіюємо решту коду:',
+      code: `WORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .`,
+    },
+    {
+      id: 4,
+      title: '4. Непривілейований користувач',
+      icon: Lock,
+      question: 'Зараз застосунок працює від root. Як захистити продакшен у разі злому контейнера?',
+      solution: 'Створити окремого користувача та переключитися на нього перед запуском:',
+      code: `RUN useradd -m appuser\nUSER appuser`,
+    },
+    {
+      id: 5,
+      title: '5. Graceful Shutdown (Сигнали)',
+      icon: Power,
+      question: 'Чому "CMD uvicorn..." у shell-формі чекає 10 секунд і падає по SIGKILL при docker stop?',
+      solution: 'Перевести команду в exec-форму (масив рядків), щоб uvicorn отримав PID 1 і прийняв SIGTERM:',
+      code: `CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]`,
+    }
+  ];
 
-                        <div className="outlined-card outlined-card--orange fade-in-delay-3">
-                            <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-                                Покриття як ціль
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Щойно число стає метою, з'являються тести, які нічого не перевіряють.
-                                Показник росте, якість — ні
-                            </p>
-                        </div>
+  const toggleChallenge = (id) => {
+    setStepMap(prev => {
+      const currentStep = prev[id] || 0;
+      if (currentStep === 0) return { ...prev, [id]: 1 };
+      if (currentStep === 1) return { ...prev, [id]: 2 };
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
 
-                        <div className="outlined-card outlined-card--orange fade-in-delay-4">
-                            <h3 className="font-heading fs-card-title font-bold text-orange mb-sm">
-                                Довіра до зеленого
-                            </h3>
-                            <p className="fs-body text-secondary" style={{ margin: 0 }}>
-                                Зелений конвеєр означає, що пройшли ваші перевірки. Не «код
-                                правильний» і не «можна випускати»
-                            </p>
-                        </div>
-                    </div>
+  const isAllOpened = Object.keys(stepMap).length === challenges.length &&
+    Object.values(stepMap).every(step => step === 2);
+
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={FileCheck}
+          title="Зведений Dockerfile: Code Review"
+          subtitle="Виправляємо 5 пасток з початкового слайда"
+        />
+
+        <div className="outlined-card outlined-card--purple mb-md" style={{ padding: '12px 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>
+              ⚠️ Початковий "наївний" варіант (Слайд <SlideLink to={9} short />):
+            </span>
+            <span >
+              Файли проєкту: .git/, .env, venv/, main.py, requirements.txt
+            </span>
+          </div>
+          <CodeBlock title="Dockerfile — перша, наївна версія">{`
+FROM python:3.12
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD uvicorn app.main:app --host 0.0.0.0 --port 8000
+`}</CodeBlock>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} className="mb-md">
+          {challenges.map((item) => {
+            const step = stepMap[item.id] || 0;
+            const IconComponent = item.icon;
+
+            return (
+              <div
+                key={item.id}
+                onClick={() => toggleChallenge(item.id)}
+                style={{
+                  border: `1px solid ${step > 0 ? '#4299e1' : '#e2e8f0'}`,
+                  borderRadius: '8px',
+                  background: step > 0 ? '#f7fafc' : '#ffffff',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: step > 0 ? '#ebf8ff' : 'transparent'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {step === 2 ? (
+                      <CheckCircle2 size={18} color="#3182ce" />
+                    ) : (
+                      <IconComponent size={18} color={step === 1 ? '#e53e3e' : '#718096'} />
+                    )}
+                    <span>{item.title}</span>
+                  </div>
+                  <span style={{ color: '#4a5568' }}>
+                    {step === 0 && '▼ Показати питання'}
+                    {step === 1 && '▶ Показати рішення'}
+                    {step === 2 && '▲ Сховати'}
+                  </span>
                 </div>
 
-                <HighlightBox color="blue">
-                    Більшість із них — це не помилки в налаштуванні, а помилки в{' '}
-                    <strong>очікуваннях</strong>. Конвеєр не робить якість сам, він лише
-                    виконує ті перевірки, які ви в нього поклали, і рівно тоді, коли ви
-                    зробили їх обов'язковими.
-                </HighlightBox>
-            </div>
+                {step >= 1 && (
+                  <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: '0 0 8px 0', color: '#e53e3e' }}>
+                      ❓ Питання: {item.question}
+                    </p>
+
+                    {step === 2 && (
+                      <div style={{ marginTop: '8px' }}>
+                        <p style={{ margin: '0 0 6px 0', color: '#2f855a' }}>
+                          ✅ Рішення: {item.solution}
+                        </p>
+                        <CodeBlock>{item.code}</CodeBlock>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-    );
+
+        <div style={{ textAlign: 'center' }}>
+          {!showFinalCode ? (
+            <button
+              onClick={() => setShowFinalCode(true)}
+              className={`header__toggle  header__toggle--active`}
+            >
+              {isAllOpened ? '🎉 Покажи підсумковий Production-Ready Dockerfile' : 'Зібрати фінальний Dockerfile'}
+            </button>
+          ) : (
+            <div style={{ textAlign: 'left' }}>
+              <CodeBlock title="✅ Фінальний Production-Ready Dockerfile">{`# syntax=docker/dockerfile:1
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# 1. Кешування залежностей
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 2. Копіюємо код (без файлів з .dockerignore)
+COPY . .
+
+# 3. Безпека: Non-root користувач
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8000
+
+# 4. Graceful Shutdown (Exec-форма)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]`}</CodeBlock>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+function FinalDockerfileSlide_old() {
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader
+          icon={FileCheck}
+          title="Зведений Dockerfile"
+          subtitle="Putting It All Together: wishlist-api"
+        />
+
+        <div className="slide-grid slide-grid--2col mb-xl">
+          <CodeBlock title="wishlist-api/Dockerfile" color="green">{`
+# pinned slim base image
+FROM python:3.12-slim
+
+# unbuffered logs, no .pyc files, no pip cache
+ENV PYTHONUNBUFFERED=1 \\
+    PYTHONDONTWRITEBYTECODE=1 \\
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# dedicated unprivileged user with a fixed UID
+RUN useradd --create-home --uid 10001 app
+
+# dependencies first, code last: build cache survives code edits
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# code stays root-owned and read-only for the app
+COPY . .
+
+USER app
+EXPOSE 8000
+
+# real health signal, not just "process is alive"
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \\
+  CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
+
+# exec form: uvicorn is PID 1 and receives SIGTERM
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+`}</CodeBlock>
+
+          <div className="outlined-card outlined-card--blue fade-in-delay-1">
+            <h3 className="info-card__title mb-sm">
+              П'ять проблем зі слайда <SlideLink to={9} short /> — закрито
+            </h3>
+            <DefBadge term="FROM" description="python:3.12 → python:3.12-slim: мінус ≈850 МБ" color="green" />
+            <DefBadge term="COPY" description="залежності окремим шаром, кеш працює" color="green" />
+            <DefBadge term="контекст" description=".dockerignore: без .git, .venv і .env" color="green" />
+            <DefBadge term="USER" description="процес більше не працює від root і не може змінити свій код" color="green" />
+            <DefBadge term="CMD" description="exec-форма: зупинка за секунду, а не за десять" color="green" />
+            <p className="fs-body text-secondary mt-xl" style={{ margin: 0 }}>
+              Конфігурації в образі немає взагалі: <code>DATABASE_URL</code> і{' '}
+              <code>REDIS_URL</code> приходять через змінні середовища під час запуску.
+            </p>
+          </div>
+        </div>
+
+        <HighlightBox color="purple" icon={Package}>
+          Це і є стартова точка лабораторної про контейнеризацію. Для wishlist-ui ви зробите те саме з
+          багатоетапною збіркою — і порівняєте розміри до й після.
+        </HighlightBox>
+      </div>
+    </div>
+  );
 }
 
 // ---------- 25. SUMMARY ----------
 
 function SummarySlide() {
-    return (
-        <div className="slide">
-            <div className="slide__content">
-                <SlideHeader icon={BookOpen} title="Підсумки" subtitle="Key Takeaways" />
+  return (
+    <div className="slide">
+      <div className="slide__content">
+        <SlideHeader icon={BookOpen} title="Підсумки" subtitle="Key Takeaways" />
 
-                <div className="summary-list">
-                    <div className="summary-list__item fade-in-delay-1">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>CI — це домовленість, а не YAML:</strong> короткі гілки й
-                            щоденна інтеграція. Конвеєр лише робить її дешевою
-                        </p>
-                    </div>
+        <div className="summary-list">
+          <div className="summary-list__item fade-in-delay-1">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Контейнер — це процес,</strong> а не віртуальна машина: простори імен
+              обмежують, що він бачить, контрольні групи — скільки бере
+            </p>
+          </div>
 
-                    <div className="summary-list__item fade-in-delay-2">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>Модель однакова скрізь:</strong> подія → завдання на чистій
-                            машині → кроки по черзі → артефакти. Змінюється синтаксис, не поняття
-                        </p>
-                    </div>
+          <div className="summary-list__item fade-in-delay-2">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Образ незмінний і складається з шарів.</strong> Що потрапило в шар —
+              лишається там назавжди, навіть якщо пізніше його видалити
+            </p>
+          </div>
 
-                    <div className="summary-list__item fade-in-delay-3">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>Цінність — у швидкості відповіді.</strong> До десяти хвилин
-                            людина чекає, після тридцяти перестає дивитися
-                        </p>
-                    </div>
+          <div className="summary-list__item fade-in-delay-3">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Порядок інструкцій вирішує швидкість збірки:</strong> від того, що
+              змінюється рідко, до того, що змінюється часто
+            </p>
+          </div>
 
-                    <div className="summary-list__item fade-in-delay-4">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>Найдешевші перевірки — найраніше:</strong> форматер і лінтер
-                            перед тестами, модульні перед наскрізними
-                        </p>
-                    </div>
+          <div className="summary-list__item fade-in-delay-4">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Розмір дають базовий образ і багатоетапна збірка,</strong> а
+              .dockerignore захищає і кеш, і секрети
+            </p>
+          </div>
 
-                    <div className="summary-list__item fade-in-delay-5">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>Конвеєр повідомляє, репозиторій вирішує.</strong> Блокує злиття
-                            не перевірка, а правило, яке ви ввімкнули вручну
-                        </p>
-                    </div>
+          <div className="summary-list__item fade-in-delay-5">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Коректний контейнер:</strong> не root, конфігурація ззовні, дані в
+              томі, журнали в stdout, exec-форма CMD
+            </p>
+          </div>
 
-                    <div className="summary-list__item fade-in-delay-5">
-                        <CheckCircle2 className="icon-md text-green" />
-                        <p className="summary-list__text">
-                            <strong>Зелений ≠ правильний.</strong> Якість конвеєра дорівнює якості
-                            перевірок, які ви в нього поклали
-                        </p>
-                    </div>
-                </div>
-
-                <div className="outlined-card outlined-card--gradient-green-blue mt-xl fade-in-delay-5">
-                    <p className="fs-lg text-primary text-center" style={{ margin: 0 }}>
-                        Після інциденту питаємо не «хто винен», а{' '}
-                        <strong>«якої перевірки бракувало»</strong>
-                    </p>
-                </div>
-            </div>
+          <div className="summary-list__item fade-in-delay-5">
+            <CheckCircle2 className="icon-md text-green" />
+            <p className="summary-list__text">
+              <strong>Фіксуйте версії.</strong> latest — не версія, а спосіб дізнатися про
+              зміни в найменш зручний момент
+            </p>
+          </div>
         </div>
-    );
+
+        <div className="outlined-card outlined-card--gradient-green-blue mt-xl fade-in-delay-5">
+          <p className="fs-lg text-primary text-center" style={{ margin: 0 }}>
+            Хороший контейнер можна видалити будь-якої миті —{' '}
+            <strong>і нічого не втратити</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ---------- 26. QUESTIONS ----------
 
 function QuestionsSlide() {
-    return (
-        <div className="slide slide--centered slide--gradient-blue-purple">
-            <div className="questions-slide">
-                <HelpCircle className="questions-slide__icon" />
-                <h2 className="questions-slide__title">Питання?</h2>
-                <p className="questions-slide__subtitle">
-                    Далі — лабораторна робота 4: конвеєр, який блокує злиття зламаного коду
-                </p>
+  return (
+    <div className="slide slide--centered slide--gradient-blue-purple">
+      <div className="questions-slide">
+        <HelpCircle className="questions-slide__icon" />
+        <h2 className="questions-slide__title">Питання?</h2>
+        <p className="questions-slide__subtitle">
+          Далі — лекція 5: кілька контейнерів разом, мережі, томи й публікація образів
+        </p>
 
-                <div className="questions-slide__links">
-                    <ExtLink href="https://docs.github.com/en/actions" color="blue">
-                        GitHub Actions — документація
-                    </ExtLink>
-                    <ExtLink href="https://docs.gitlab.com/ee/ci/" color="orange">
-                        GitLab CI — документація
-                    </ExtLink>
-                    <ExtLink href="https://martinfowler.com/articles/continuousIntegration.html" color="purple">
-                        Fowler — Continuous Integration
-                    </ExtLink>
-                    <ExtLink href="https://martinfowler.com/articles/practical-test-pyramid.html" color="green">
-                        Практична піраміда тестів
-                    </ExtLink>
-                </div>
-            </div>
+        <div className="flex gap-sm" style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+          <ExtLink href="https://docs.docker.com/build/building/best-practices/" color="blue">
+            Docker — найкращі практики збірки
+          </ExtLink>
+          <ExtLink href="https://docs.docker.com/reference/dockerfile/" color="purple">
+            Довідник Dockerfile
+          </ExtLink>
+          <ExtLink href="https://docs.docker.com/build/building/multi-stage/" color="green">
+            Багатоетапна збірка
+          </ExtLink>
+          <ExtLink href="https://12factor.net/config" color="orange">
+            The Twelve-Factor App — конфігурація
+          </ExtLink>
+          <ExtLink href="https://trivy.dev/" color="blue">
+            Trivy
+          </ExtLink>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

@@ -1,10 +1,10 @@
 /**
- * ScoreCircle — кружечок з оцінкою у стилі Lighthouse/PageSpeed Insights.
- * Колір автоматично обирається за порогами 0-49 / 50-89 / 90-100.
+ * ScoreCircle — score badge in the style of Lighthouse / PageSpeed Insights.
+ * The color is picked automatically by thresholds 0–49 / 50–89 / 90–100.
  *
  * Props:
- *   score    {number}  — 0..100
- *   label    {string}  — підпис під кружечком
+ *   score  {number} — 0..100
+ *   label  {string} — caption under the circle
  */
 export default function ScoreCircle({ score, label }) {
   let color;

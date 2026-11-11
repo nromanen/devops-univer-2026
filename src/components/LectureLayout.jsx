@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Home, ChevronLeft, ChevronRight, BookOpenCheck } from 'lucide-react';
 import SelfStudyBadge from './SelfStudyBadge';
+import SlideNavContext from './SlideNavContext';
 
 /**
- * LectureLayout — спільний компонент навігації для всіх лекцій.
+ * LectureLayout — shared navigation component for all lectures.
  *
- * Використання:
+ * Usage:
  *   import LectureLayout from '../components/LectureLayout';
  *
  *   const slides = [
@@ -22,6 +23,10 @@ import SelfStudyBadge from './SelfStudyBadge';
  *
  * Slides without `selfStudy` behave exactly as before, so lectures that
  * do not use the flag need no changes.
+ *
+ * Slide components can link to other slides of the same lecture with
+ * <SlideLink to={id} />, which reads navigation from SlideNavContext
+ * provided here. Lectures that do not use SlideLink need no changes either.
  */
 export default function LectureLayout({ slides }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -77,6 +82,33 @@ export default function LectureLayout({ slides }) {
     setCurrentSlide(index >= 0 ? index : 0);
   }, [currentSlide, selfStudyOnly, slides, visibleSlides]);
 
+  // Navigation by slide id for in-slide links (SlideLink).
+  // Ids are stable, so links survive inserted slides like '9_1'.
+  // If the self-study filter hides the target, the filter is switched off.
+  const goToSlideById = useCallback(
+    (id) => {
+      const index = visibleSlides.findIndex((s) => s.id === id);
+      if (index >= 0) {
+        goToSlide(index);
+        return;
+      }
+      const fullIndex = slides.findIndex((s) => s.id === id);
+      if (fullIndex >= 0) {
+        setSelfStudyOnly(false);
+        setCurrentSlide(fullIndex);
+      }
+    },
+    [visibleSlides, slides, goToSlide]
+  );
+
+  const navValue = useMemo(
+    () => ({
+      goToSlide: goToSlideById,
+      numberOf: (id) => numberById.get(id),
+    }),
+    [goToSlideById, numberById]
+  );
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -103,6 +135,7 @@ export default function LectureLayout({ slides }) {
   const CurrentSlideComponent = activeSlide.component;
 
   return (
+    <SlideNavContext.Provider value={navValue}>
     <div className="lecture-wrapper">
       {/* Slide Navigation Bar */}
       <nav className="slide-nav">
@@ -196,5 +229,6 @@ export default function LectureLayout({ slides }) {
         <span>End — в кінець</span>
       </div>
     </div>
+    </SlideNavContext.Provider>
   );
 }
