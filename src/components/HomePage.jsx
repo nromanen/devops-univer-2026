@@ -60,7 +60,7 @@ const LECTURES = [
   {
     num: '9', title: 'Kubernetes: архітектура й основні об\'єкти',
     desc: 'Цикл узгодження стану • Под • Deployment • Мітки й селектори • Service • Ingress • ConfigMap',
-    status: 'draft'
+    status: 'ready'
   },
 
   {
